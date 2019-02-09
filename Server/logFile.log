@@ -1,0 +1,2 @@
+[Sat Jun 09 2018 00:48:42 GMT-0400 (US Eastern Daylight Time)] ERROR Error in configuration Datasource connection error MethodDisconnectedError: Ran out of retries trying to reconnect to "localhost:27017". Try setting `server.reconnectTries` and `server.reconnectInterval` to something higher.
+
