@@ -1,0 +1,22 @@
+<div class="modal-backdrop" [class.open]="isOpen"></div>
+<div class="modal" [class.open]="isOpen">
+    <bh-r-loading [isLoading]="isLoading">
+        <div class="modal-center-container">
+            <div class="modal-dialog modal-center" [ngClass]="{'modal-sm':size === 'small', 'modal-lg':size === 'large', 'modal-xl':size === 'xlarge' }" role="document">
+                <div class="modal-content" [class.open]="isOpen">
+                    <div class="modal-header" *ngIf="modalTitle">
+                        <button type="button" class="close tooltip-tl" data-dismiss="modal" (click)="hide('true');close.emit();"><i class="fa fa-times"></i><span>Close</span></button>
+                        <h3 class="modal-title single-wordwrap">{{modalTitle}}</h3>
+                    </div>
+                    <div class="modal-body" [style.min-height]="modalHeight">
+                        <ng-content></ng-content>
+                    </div>
+                    <div class="modal-footer" *ngIf="showFooter">
+                        <ng-content select="[bh-modal-buttons]"></ng-content>
+                        <button type="button" class="btn btn-blue" (click)="hide('true');close.emit();">{{closeBtnTitle}}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </bh-r-loading>
+</div>

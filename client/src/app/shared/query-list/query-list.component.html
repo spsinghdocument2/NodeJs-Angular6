@@ -1,0 +1,168 @@
+<section class="content-block">
+    <bh-r-loading [isLoading]="isLoading">
+        <div class="header-panel sticky header-panel-table">
+            <div class="row">
+                <div class="col-sm-4">
+                    <h2>{{title}}</h2>
+                    <h2>{{controlList.dataSourceSearchControl.data.disabledValues}}</h2>
+                </div>
+                <div class="col-sm-4 col-xl-3 no-padding-right">
+                    <div [ngSwitch]="queryOptionsLoading">
+                        <bh-dropdown-input *ngSwitchCase="false"
+                                           [options]="queryOptions"
+                                           optionsText="displayText"
+                                           optionsValue="id"
+                                           (change)="onChange()"
+                                           [bh-model]="this"
+                                           bh-property="selectedQueryId">
+                        </bh-dropdown-input>
+                        <span *ngSwitchCase="true" class="form-group form-control">
+                            Loading... <i class="fa fa-spinner fa-pulse fa-fw green"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-4 col-xl-5 no-padding-left">
+                    <button *ngIf="!queryOptionsLoading" [disabled]="isAllowModifyQuery" (click)="onEditQuery()" type="button" class="btn btn-white btn-icon tooltip-tl" style="margin-left: 12px"><i class="fa fa-fw fa-pencil fa-lg"></i><span>Edit/View Query Details</span></button>
+                    <button  type="button" class="btn btn-white btn-icon tooltip-tl" [disabled]="isAllowAddQuery" (click)="onAddQuery()"><i class="fa fa-fw fa-plus fa-lg"></i><span>Add New Query</span></button>
+                    <div class="header-right">
+                        <span class="selected-row-count" *ngIf="selectedRowIds.length > 0"><h3>{{selectedRowIds.length}}</h3> selected</span>
+                        <button type="button" class="btn btn-white btn-icon tooltip-tl" *ngIf="showBusinessRule" (click)="onBusinessRule()"><i class="fa fa-fw fa-list fa-lg"></i><i class="fa fa-fw fa-plus-circle overlay-icon"></i><span>Add Business Rule</span></button>
+                        <button type="button" class="btn btn-white btn-icon tooltip-tl" *ngIf="showDecisionRule" (click)="onDecisionRule()"><i class="fa fa-fw fa-table fa-lg"></i><i class="fa fa-fw fa-plus-circle overlay-icon"></i><span>Add Decision Table</span></button>
+                        <button type="button" class="btn btn-white btn-icon tooltip-tl" *ngIf="showCreateTemplate" (click)="onCreateTemplate()"><i class="fa fa-fw fa-plus fa-lg"></i><span>Add New Template</span></button>
+                        <div class="dropdown">
+                            <button class="btn btn-white btn-icon dropdown-toggle tooltip-tl" type="button" id="gridsettings" data-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-v fa-lg"></i><span>More Actions</span></button>
+                            <ul class="dropdown-menu">
+                                <li><button class="btn" (click)="onRefresh()"><i class="fa fa-fw fa-refresh"></i>Refresh List</button></li>
+                                <li><button class="btn" *ngIf="showControlInMoreAction" [disabled]="isDataSourceDisabled" (click)="getDataSource()"><i class="fa fa-fw fa-database"></i>Data Source</button></li>
+                                <li><button class="btn" *ngIf="showControlInMoreAction" [disabled]="isPreviewDisabled" (click)="getPreview()"><i class="fa fa-fw fa-eye"></i>Preview</button></li>
+                                <li><button class="btn" *ngIf="showControlInMoreAction" [disabled]="isSampleDataSourceDisabled" (click)="getSampleDataSource()"><i class="fa fa-fw fa-database"></i>Sample Data Source</button></li>
+                                <li *ngIf="queryActions.length > 0" class="divider"></li>
+                                <li *ngFor="let queryAction of queryActions">
+                                    <button (click)="queryAction.action(selectedRowIds)" [disabled]="queryAction.isDisabled" class="btn">
+                                        <i [class]="queryAction.class"></i>{{queryAction.label}}
+                                    </button>
+                                </li>
+                                <li class="divider"></li>
+                                <li><button [disabled]="!selectedQueryId" class="btn" (click)="exportToExcel();"><i class="fa fa-fw fa-file-excel-o"></i>Export to Excel</button></li>
+                                <li><button [disabled]="!selectedQueryId" class="btn" (click)="chooseColumns(columnList);"><i class="fa fa-fw fa-file-pdf-o"></i>Export to PDF</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <bh-section-bh-table-list *ngIf="!queryListLoading"
+                                  [defaultSortColumnName]="defaultSortColumn"
+                                  [service]="pagingService"
+                                  [showSelectRow]="showSelectRow"
+                                  iconType="pencil"
+                                  (checkedRow)="onCheckedRow($event)"
+                                  (selectedRow)="selectedQueryRow($event)"
+                                  (clearChecked)="onClearChecked($event)"
+                                  (selectedRowsIdsChange)="onSelectedRowsIdsChange($event)"
+                                  (filteredRowsIdsChange)="onFilteredRowsIdsChange($event)"
+                                  (pagingChange)="onPageNumberChange($event)"
+                                  [showMultiSelect]="isMultiSelect">
+        </bh-section-bh-table-list>
+    </bh-r-loading>
+    <bh-loading-indicator *ngIf="!queryHasRun && !isLoading"></bh-loading-indicator>
+    <bh-r-modal size="small" #columnList modalTitle="Export to PDF">
+        <form [formGroup]="form">
+            <bh-r-listview #checkboxes [form]="form" [bhControl]="controlList.pdfColumns"></bh-r-listview>
+        </form>
+        <button bh-modal-buttons class="btn btn-blue" (click)="exportToPDF(checkboxes);columnList.hide();">Export PDF</button>
+    </bh-r-modal>
+
+    <bh-r-modal size="large" #pdrModel *ngIf="showModal && showControlInMoreAction" modalTitle="Download Options" (close)="pdrModel.hide">
+        <section class="content-block">
+            <form [formGroup]="pdrForm" *ngIf="isFormReady" novalidate>
+                <div class="row">
+                    <div>
+                        <div class="col-sm-6">
+                            <div>
+                                <bh-r-date-and-options [form]="pdrForm" [bhControl]="controlList.startDate"></bh-r-date-and-options>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                          
+                                <bh-r-date-and-options [form]="pdrForm" [bhControl]="controlList.endDate"></bh-r-date-and-options>
+                        
+                        </div>
+                        <div class="col-sm-6">
+                            <bh-r-dropdown [form]="pdrForm" [bhControl]="controlList.reportInterval"></bh-r-dropdown>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+            <button bh-modal-buttons class="btn btn-blue pull-left" [disabled]="pdrForm.pristine || disableDefault " (click)="getMonth()">Default</button>
+            <button bh-modal-buttons class="btn btn-blue" [disabled]="!canDownload()" (click)="downloadXML();pdrModel.hide();">Download</button>
+           
+</bh-r-modal>
+
+
+
+
+
+    <bh-r-modal size="xlarge" #contactList *ngIf="showModal && showControlInMoreAction" [modalTitle]="dataSourceModalTitle" (close)="contactList.hide">
+        <section class="content-block">
+            <bh-r-table #contactListGrid
+                        [service]="clientContactAPIService"
+                        showPagination="true"
+                        showFilters="true"
+                        (selectedRow)="selectedContactRow($event);"
+                        iconType="plus"
+                        iconTooltip="Select">
+
+            </bh-r-table>
+        </section>
+
+        <section class="content-block">
+            <bh-r-table #addressListGrid
+                        [service]="contactAddressService"
+                        showPagination="true"
+                        showFilters="true"
+                        (selectedRow)="selectedAddressRow($event);"
+                        iconType="plus"
+                        iconTooltip="Select">
+
+            </bh-r-table>
+        </section>
+        <button bh-modal-buttons class="btn btn-blue" [disabled]="isAllowDownload" *ngIf="isPreview" (click)="downloadPreviewDocument();contactList.hide();">Preview</button>
+        <button bh-modal-buttons class="btn btn-blue" [disabled]="isAllowDownload" *ngIf="!isPreview" (click)="downloadXML();contactList.hide();">Download</button>
+
+
+    </bh-r-modal>
+    <bh-r-modal size="xlarge" #dealList  *ngIf="showDocPrepModal && showControlInMoreAction" [modalTitle]="dataSourceModalTitle">
+            <bh-opportunity-document-preparation-tabs #documentPreparationTab *ngIf="showDocPrep" (modalClose)="onModalClose()" (selectedEntityIds)="onSelectedEntityIdsChange($event)"
+                                          [templateId]="selectedRowIds[0]"            [dealId]="dealId" (entityFilterGridList)="onEntityFilterGridList($event)">
+            </bh-opportunity-document-preparation-tabs>
+        <button bh-modal-buttons class="btn btn-blue" [disabled]="disableDownloadButtonForDocPrep" *ngIf="isPreview" (click)="downloadDocPrepDocument($event);">Preview</button>
+        <button bh-modal-buttons class="btn btn-blue" [disabled]="disableDownloadButtonForDocPrep" *ngIf="!isPreview" (click)="downloadDocPrepDocument($event);">Download</button>
+    </bh-r-modal>
+     <bh-r-modal   #previewModal *ngIf="showPreviewModal && showControlInMoreAction" modalTitle="Preview Template - {{currentTemplate.Name}}" (close)="closePreview()">
+        <div class="row">
+            <div class="col-sm-5" *ngIf="!isPreviewForDocPrep">
+                <bh-r-radio [form]="PreviewForm" [bhControl]="previewControlList.TemplateOptionControl"></bh-r-radio>
+            </div>
+            <div class="col-sm-1" *ngIf="!isPreviewForDocPrep"></div>
+            <div class="col-sm-6" *ngIf="!samplePreview">
+                <bh-r-search-and-select [form]="PreviewForm" [bhControl]="previewControlList.CategoryControl"  (OnModalClose)="setSelectedRowByPreview($event)"></bh-r-search-and-select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <bh-r-dropdown [form]="PreviewForm" [bhControl]="previewControlList.DefaultOutputTypeControl"></bh-r-dropdown>
+            </div>
+        </div>
+        <button bh-modal-buttons class="btn btn-blue" (click)="previewDocument()" [disabled]="!previewModalValid">Preview</button>
+
+    </bh-r-modal>
+
+
+   
+
+    <bh-r-search-and-select #datasource *ngIf="showModal && showControlInMoreAction" [form]="form" [bhControl]="controlList.dataSourceSearchControl" (OnModalClose)="onDataSourceSearchModalClose($event)" [showControlInMoreAction]="showControlInMoreAction"></bh-r-search-and-select>
+</section>

@@ -1,0 +1,101 @@
+<section class="content-block">
+    <div class="header-panel header-panel-table sticky">
+        <div class="row">
+            <div [ngClass]="ref.children.length == 0 ? 'col-sm-8' : 'col-sm-4'">
+                <h2>{{sectionName}}</h2>
+            </div>
+            <div #ref [ngClass]="ref.children.length == 0 ? '' : 'col-sm-4 col-xl-3 no-padding-right'">
+                <ng-content select="[header-panel-flexible]"></ng-content>
+            </div>
+            <div [ngClass]="ref.children.length == 0 ? 'col-sm-4' : 'col-sm-4 col-xl-5 no-padding-left'">
+                <div class="header-right">
+                    <span class="selected-row-count" *ngIf="selectedRowIds.length > 0"><h3>{{selectedRowIds.length}}</h3> selected</span>
+                    <button *ngIf="showAddButton && showAdd" type="button" class="btn btn-white btn-icon tooltip-tl" (click)="addNew()"><i class="fa fa-fw fa-plus fa-lg"></i><span>Add New</span></button>
+                    <button type="button" *ngIf="isTemplateRunList" class="btn btn-white btn-icon tooltip-tl" [disabled]="selectedRowIds.length!=1"(click)="onRunTemplate()"><i class="fa fa-fw fa-lg fa-play"></i><span>Run</span></button>
+                    <button type="button" *ngIf="showCloseButton" id="notify-cancel" class="btn btn-white btn-icon tooltip-tl" (click)="onClose()"><i class="fa fa-fw fa-times fa-lg"></i><span>Close</span></button>
+                    <button *ngIf="navigateManageTies" type="button" class="btn btn-white btn-icon tooltip-tl" (click)="manage()"><i class="fa fa-fw fa-link fa-lg"></i><span>Manage Ties</span></button>
+                    <div class="dropdown" *ngIf="showKey">
+                        <button class="btn btn-white btn-icon dropdown-toggle tooltip-tl" type="button" data-toggle="dropdown" [disabled]="showKeyDisabled"><i class="fa fa-fw fa-key fa-lg"></i><span>Security Level</span></button>
+                        <ul class="dropdown-menu">
+                            <li *ngFor="let action of getActions()">
+                                <button (click)="action.action(selectedRowIds)" [disabled]="action.isDisabled" class="btn">
+                                    <i [class]="action.class"></i>{{action.label}}
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-white btn-icon dropdown-toggle tooltip-tl" type="button" id="gridsettings" data-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-v fa-lg"></i><span>More Actions</span></button>
+                        <ul class="dropdown-menu">
+                            <li><button class="btn" (click)="results.onRefresh()"><i class="fa fa-fw fa-refresh"></i>Refresh List</button></li>
+                            <li><button class="btn" (click)="exportToExcel(anchor);"><i class="fa fa-fw fa-file-excel-o"></i>Export to Excel</button></li>
+                            <ng-container *ngIf="!showKey">
+                                <li *ngFor="let action of getActions()">
+                                    <button (click)="action.action(selectedRowIds)" [disabled]="action.isDisabled" class="btn">
+                                        <i [class]="action.class"></i>{{action.label}}
+                                    </button>
+                                </li>
+                            </ng-container>
+                        </ul>
+                        <a #anchor style="display:none" [download]="FileName" target="_blank" href="#">{{FileName}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <template [ngIf]="innerControlType=='bhrtable'">
+        <bh-r-table #results
+                    [service]="service"
+                    initialSearch="true"
+                    showPagination="true"
+                    showFilters="true"
+                    [hasSelectAllCheckBoxItem]="hasSelectAllCheckBoxItem"
+                    [showViewEditColumn]="showEditButton"
+                    [iconType]="iconType"
+                    [iconTooltip]="iconTooltip"
+                    [showDeleteColumn]="showDeleteButton"
+                    [selectedRowsIds]="selectedRowIds"
+                    (selectedRowsIdsChange)="onSelectedRowsIdsChange($event)"
+                    (selectedRow)="selectedRow($event)"
+                    (filterChange)="onFilterChange($event)"
+                    (pageLengthChange)="onPageLengthChange($event)"
+                    (pageNumberChange)="pageNumberChange($event)"
+                    (delete)="onDelete($event)"
+                    (checkRow)="onRowChecked($event)"
+                    (clearChecked)="onClearChecked($event)"
+                    [isMultiSelect]="isMultiSelect"
+                    [hasCheckBoxItems]="hasSelectCheckBoxItem">
+        </bh-r-table>
+    </template>
+    <template [ngIf]="innerControlType=='bhrtree'">
+        <bh-r-tree #results
+                   [service]="service"
+                   initialSearch="true"
+                   showFilters="true"
+                   [showViewEditColumn]="showEditButton"
+                   (selectedRow)="selectedRow($event)">
+        </bh-r-tree>
+    </template>
+    <template [ngIf]="innerControlType=='bhtable'">
+        <bh-section-bh-table-list #results
+                                  [iconType]="iconType"
+                                  [iconTooltip]="iconTooltip"
+                                  [service]="service"
+                                  [getMethod]="getMethod"
+                                  [id]="id"
+                                  [showSelectRow]="showEditButton"
+                                  (selectedRow)="selectedRow($event)"
+                                  [showDeleteColumn]="showDeleteButton"
+                                  (delete)="onDelete($event)"
+                                  (pageLengthChange)="onPageLengthChange($event)"
+                                  (pagingChange)="pageNumberChange($event)"
+                                  (checkedRow)="onRowChecked($event)"
+                                  (clearChecked)="onClearChecked($event)"
+                                  (selectedRowsIdsChange)="onSelectedRowsIdsChange($event)"
+                                  [showMultiSelect]="isMultiSelect"
+                                  (onRefreshRemoveCheckedRows)="RefreshList($event)"
+                                  (onGetData)="onGetDataFunc()">
+        </bh-section-bh-table-list>
+    </template>
+    <!--<bh-export-to-excel-modal #dialogPopup></bh-export-to-excel-modal>-->
+</section>

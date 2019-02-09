@@ -1,0 +1,33 @@
+<label [formGroup]="form" class="form-group" [class.input-group]="hasButton">
+	{{bhControl.label}}<span  class="required-icon tooltip-tr" *ngIf="isRequired"><span>Required</span></span><ng-content select="[label-icon]"></ng-content>
+    <span class="form-text-before" *ngIf="bhControl.data?.textBefore">{{bhControl.data.textBefore}}</span>
+	<ng-content select="[bh-prefix]"></ng-content>
+    <input #inp class="form-control"
+           [formControlName]="bhControl.key"
+           [id]="bhControl.key"
+           [type]="bhControl.data?.type || 'text'"
+           [class.icon-right]="bhControl.data?.type == 'email' || bhControl.data?.type == 'password' || bhControl.data?.type == 'url' || bhControl.data?.type == 'tel'"
+           [class.has-text-before]="bhControl.data?.textBefore"
+           [attr.maxlength]="bhControl.data?.maxLength"
+           [placeholder]="bhControl.data?.placeholder || ''"
+           [title]="bhControl.data?.title || ''"
+           [readonly]="bhControl?.disabled || form.disabled || false"
+           (change)="onBlur(inp.value)"/>
+
+    <span *ngIf="bhControl.data?.type == 'tel'" class="fa fa-phone"></span>
+    <span *ngIf="bhControl.data?.type == 'email'" class="fa fa-envelope-o"></span>
+    <span *ngIf="bhControl.data?.type == 'password'" class="fa fa-unlock-alt"></span>
+    <span *ngIf="bhControl.data?.type == 'url'" class="fa fa-globe"></span>
+
+    <div class="input-group-addon" *ngIf="hasButton">
+        <ng-content select="[side-button]"></ng-content>
+    </div>
+
+	<ng-content select="[bh-suffix]"></ng-content>
+
+	<div class="errorMessage" *ngIf="!isValid" [innerHtml]="validationMessage"></div>
+
+</label>
+
+
+

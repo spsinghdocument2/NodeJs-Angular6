@@ -1,0 +1,98 @@
+<label [formGroup]="form" class="form-group input-group" *ngIf="!isPlusOnlyDisplayed && !showControlInMoreAction">
+    <div>
+        {{bhControl.label}}<span class="required-icon tooltip-tr" *ngIf="isRequired"><span>Required</span></span>
+        <input #realOne
+               [formControlName]="modelProperties.searchId"
+               [required]="isRequired"
+               hidden="hidden" />
+        <input type="text"
+               readonly="readonly"
+               [value]="displayText"
+               class="form-control readonly-white"
+               [required]="isRequired"
+               [disabled]="bhControl?.disabled || bhControl.data?.disabled || form.disabled || false" />
+    </div>
+    <div class="input-group-btn">
+        <button class="btn btn-blue fa fa-plus" type="button" (click)="OnModalShow()" [disabled]="bhControl?.disabled || bhControl.data?.disabled || false"></button>
+    </div>
+    <div class="errorMessage" *ngIf="!isValid" [innerHtml]="validationMessage"></div>
+</label>
+
+<button *ngIf="isPlusOnlyDisplayed && !showControlInMoreAction" class="btn btn-white btn-icon tooltip-tl" type="button" (click)="OnModalShow()" [disabled]="bhControl?.disabled || bhControl.data?.disabled || false">
+    <i class="fa fa-fw fa-lg fa-plus"></i><span>Select</span>
+</button>
+
+<bh-r-modal #modal size="xlarge" [isMultiSelect]="bhControl.data.isMultiSelect" (close)="onClose()">
+    <div class="row" *ngIf="showList">
+        <div class="col-xs-12" [ngClass]="{'col-sm-8 col-xl-9' : isMultiSelect && showRightColumn}">
+            <bh-r-table #table *ngIf="innerControlType=='bhrtable' && loadGrid"
+                        [service]="bhControl.data.service"
+                        [disabledValues]="bhControl.data.disabledValues"
+                        showPagination="true"
+                        showFilters="true"
+                        [columns]="bhControl.data.columns"
+                        [initialSearch]="showControlInMoreAction"
+                        [isMultiSelect]="bhControl.data.isMultiSelect"
+                        (selectedRow)="selectedRow($event);modal.hide();"
+                        (rowsPopulated)="filterSelectedRows($event);"
+                        iconType="plus"
+                        iconTooltip="Select">
+                <p *ngIf="displayText!=undefined && displayText.length > 0 && !isMultiSelect && !showControlInMoreAction" bh-more-info class="text-selected">Selected: <strong class="blue">{{displayText}}</strong></p>
+            </bh-r-table>
+            <bh-r-tree #table *ngIf="innerControlType=='bhrtree'"
+                       [service]="bhControl.data.service"
+                       [disabledValues]="bhControl.data.disabledValues"
+                       showFilters="true"
+                       [hasCheckBoxItems]="false"
+                       [isMultiSelect]="bhControl.data.isMultiSelect"
+                       (selectedRow)="selectedRow($event);modal.hide();"
+                       (rowsPopulated)="filterSelectedRows($event);"
+                       iconClass="fa fa-fw fa-plus fa-lg"
+                       iconTooltip="Select">
+                <p *ngIf="displayText!=undefined && displayText.length > 0 && !isMultiSelect" bh-more-info class="text-selected">Selected: <strong class="blue">{{displayText}}</strong></p>
+            </bh-r-tree>
+
+            <bh-table #table *ngIf="innerControlType!=undefined && loadGrid && innerControlType=='bhtable'"
+                      [rows]="bhControl.data.rows"
+                      [columns]="bhControl.data.columns"
+                      (selectedRow)="selectedRow($event);modal.hide();"
+                      iconType="plus"
+                      [isTreeView]="showTreeView?true:false"
+                      [childItemsPath]="childItemsPath"
+                      [fixedHeightOffset]="showTreeView?'250':'0'">
+            </bh-table>
+
+            <bh-section-bh-table-list #table *ngIf="loadGrid && innerControlType=='bhsectiontable'"
+                                      [iconType]="iconType"
+                                      [service]="bhControl.data.service"
+                                      [showSelectRow]="showEditButton"
+                                      (checkedRow)="onRowChecked($event)"
+                                      (clearChecked)="onClearChecked($event)"
+                                      (selectedRowsIdsChange)="onSelectedRowsIdsChange($event)"
+                                      [showMultiSelect]="isMultiSelect"
+                                      [checkedRowIds]="disabledValues"
+                                      [isSearchAndSelect]="isSearchAndSelect"
+                                      [numberOfRowSelection]="bhControl.data.numberOfRowSelection!=undefined ?bhControl.data.numberOfRowSelection:null">
+            </bh-section-bh-table-list>
+        </div>
+        <div class="col-sm-4 col-xl-3 no-padding-left" *ngIf="isMultiSelect && showRightColumn">
+            <div class="form-section-header">
+                <h3><span>Selected</span></h3>
+            </div>
+            <div *ngFor="let display of displayData" style="margin-bottom: 10px">
+                <button (click)="selectedRowCheck(display)" type="button" class="btn btn-icon-sm" [ngClass]="display.isSelected ? 'btn-blue' : 'btn-white'" style="margin-right: 5px">
+                    <i class="fa fa-fw fa-lg" [ngClass]="display.isSelected  ? 'fa-check white' : ''"></i>
+                </button>
+                <span>{{display.displayText}}</span>
+            </div>
+        </div>
+    </div>
+    <button bh-modal-buttons type="button" class="btn btn-blue pull-left" (click)="onAdd()" *ngIf="showAdd && showList">Add</button>
+
+    <button bh-modal-buttons type="button" class="btn btn-blue pull-left" (click)="onModalClear(true)"  [disabled]="bhControl.data.disabledValues?.length==0" *ngIf="showList && !showControlInMoreAction && (bhControl.data.hideClearSelected == undefined || bhControl.data.hideClearSelected === false)" >Clear Selected</button>
+    <button bh-modal-buttons type="button" class="btn btn-blue pull-left" *ngIf="innerControlType=='bhsectiontable'" [disabled]="bhControl.data.disabledValues?.length==0 || isSortSelected" (click)="onSort()">Sort by Selected</button>
+    <button bh-modal-buttons type="button" class="btn btn-blue pull-left" *ngIf="bhControl.data.toggleView == true" (click)="toggleView()">Show <span *ngIf="!showTreeView">Hierarchy</span><span *ngIf="showTreeView">List</span></button>
+    <button bh-modal-buttons type="button" class="btn btn-blue pull-left" (click)="onSave()" [disabled]="!(this.componentRef.instance.canSave())" *ngIf="!showList">Save</button>
+    <template #dynamicContent>
+    </template>
+</bh-r-modal>

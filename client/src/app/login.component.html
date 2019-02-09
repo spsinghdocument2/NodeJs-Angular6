@@ -1,0 +1,41 @@
+<section>
+            <bh-r-loading [isLoading]="isLoading">
+      <div class="row">
+        <div class="col-xs-12">
+            <h2 class=" text-center mar_btm30 pay_login col-lg-4 col-md-4 col-sm-6 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">MAF PAYMENT LOGIN<br>
+            <small class="text-lowercase font12">powered by CallPass Tech.</small></h2>
+		</div>
+      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+        	<h3>Easy and Convenient</h3>
+                <p>Make your car payments online it's easy. Simply click on the "Create Account" link and follow the steps through the verification process. Once your account is validated you can start managing your account. Make one-time payments or view your account balance.</p>
+
+                <h3>Account Management</h3>
+                <p>CallPass Tech, provides our processing system allowing you to manage your account online and make your payments using your checking account.</p>
+                
+          </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 acc_serv">
+        <form class="login_bg" [formGroup]="form" *ngIf="isReady" novalidate>
+         <div class="form-group">
+           <bh-r-input  [form]="form" [bhControl]="controlList.userNameControl" ></bh-r-input>
+          </div>
+          <div class="form-group">
+          <bh-r-input  [form]="form" [bhControl]="controlList.emailControl" ></bh-r-input>
+          </div>
+          <div class="form-group">
+          <bh-r-input  [form]="form" [bhControl]="controlList.passwordControl" ></bh-r-input>
+          </div>
+          <div class="form-group text-left">
+               <button class="btn btn-default" type="submit">Reset</button>
+           		 <a href="avascript:void(0)"><button (click)="onSubmit()" [disabled]="!canSave" class="btn btn-default mar_rt20" type="button">Login</button></a>
+                <a href="avascript:void(0)">forgot password?</a>
+         </div>
+          <p><a href="avascript:void(0)">Want to reset your password!</a></p>
+         <p>Not registered yet? <a href="avascript:void(0)l">Create Account</a></p>
+         <div class="customer_servicebox"><p>For questions or comments regarding to your payments please contact customer service at 800.793.9661 x600</p></div>
+         <div class="login_logobox text-center mar_top10"><img src="assets/images/callpass.jpg" class="mar_rt10"/><img src="assets/images/global_sign.jpg"/></div>
+         </form>        
+         </div>    
+      </div>
+      </bh-r-loading>
+  </section>
+  

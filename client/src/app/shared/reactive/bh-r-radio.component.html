@@ -1,0 +1,20 @@
+<label [formGroup]="form" [class.form-group]="!noMargin" style="pointer-events:none">
+    <span class="radio-label">{{bhControl.label}}<span class="required-icon tooltip-tr" *ngIf="isRequired"><span>Required</span></span></span>
+    <ng-content select="[bh-prefix]"></ng-content>
+    <template ngFor let-option [ngForOf] ="bhControl.data?.options">
+        <div [class.inline-radio]="bhControl.data?.inline === true">
+            <label class="checkbox-radio radio">
+                {{getOptionProperty(option, bhControl.data?.optionsText || 'Label')}}
+                <input class="radio-input"
+                       type="radio"
+                       [disabled]="bhControl?.disabled || false"
+                       [attr.name]="bhControl.key"
+                       [value]="getOptionProperty(option, bhControl.data?.optionsValue || 'Id')"
+                       [formControlName]="bhControl.key">
+                <span class="checkbox-radio-indicator"></span>
+            </label>
+        </div>
+        </template>
+        <ng-content select="[bh-suffix]"></ng-content>
+        <div class="errorMessage" *ngIf="!isValid" [innerHtml]="validationMessage"></div>
+</label>

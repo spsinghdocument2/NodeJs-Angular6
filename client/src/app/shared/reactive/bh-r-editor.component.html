@@ -1,0 +1,14 @@
+<div [formGroup]="form" class="form-group editor-label" [class.editor-readonly]="bhControl?.data?.readonly || bhControl?.disabled">
+    {{bhControl.label}}<span class="required-icon tooltip-tr" *ngIf="isRequired"><span>Required</span></span>
+
+    <p-editor *ngIf="bhControl?.data?.readonly || bhControl.disabled"
+              [readOnly]="true"
+              [formControlName]="bhControl.key">
+    </p-editor>
+    <p-editor *ngIf="!bhControl?.data?.readonly && !bhControl.disabled"
+              [readOnly]="false"
+              [formControlName]="bhControl.key">
+    </p-editor>
+
+    <div class="errorMessage" *ngIf="!isValid" [innerHtml]="validationMessage"></div>
+</div>

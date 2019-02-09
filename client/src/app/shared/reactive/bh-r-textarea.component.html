@@ -1,0 +1,21 @@
+<label [formGroup]="form" class="form-group">
+	{{bhControl.label}}<span class="required-icon tooltip-tr" *ngIf="isRequired"><span>Required</span></span>
+
+	<ng-content select="[bh-prefix]"></ng-content>
+
+	<textarea #txtarea class="form-control"
+		[formControlName]="bhControl.key"
+        [id]="bhControl.key"
+		[attr.maxlength]="bhControl.data?.maxLength"
+		[placeholder]="bhControl.data?.placeholder || ''"
+		[required]="isRequired || false"
+		[readonly]="bhControl?.disabled || form.disabled || false"
+		[rows]="bhControl.data?.rows || 3"
+        [attr.disabled]="null"
+		(change)="onBlur()"></textarea> 
+
+	<ng-content select="[bh-suffix]"></ng-content>
+    <span class="clearfix"></span>
+	<div class="errorMessage" *ngIf="!isValid" [innerHtml]="validationMessage"></div>
+</label>
+

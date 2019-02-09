@@ -1,0 +1,65 @@
+
+<div [formGroup]="form" class="form-group input-group">
+    {{bhControl.label}}<span class="required-icon tooltip-tr" *ngIf="isRequired"><span>Required</span></span>
+    <ng-content select="[label-icon]"></ng-content>
+
+    <textarea #ta
+              [attr.maxlength]="bhControl.data?.maxLength"
+              [placeholder]="bhControl.data?.placeholder || ''"
+              [formControlName]="modelProperties.fullAddress"
+              [rows]="bhControl.data?.rows || 3"
+              class="form-control"
+              [readonly]="bhControl?.disabled || form.disabled || false"
+              [required]="isRequired"
+              (change)="onBlurOfFullAddress(ta.value)"
+              [class.ng-invalid]="addressInvalid" 
+              ></textarea>
+
+    <div class="input-group-addon textarea">
+        <button class="btn btn-blue fa fa-caret-down" type="button" (click)="toggleOpen();" [disabled]="bhControl?.disabled || form.disabled || false"></button>
+        <div class="dropdown-menu" [style.display]="isOpen ? 'block' : 'none'">
+            <div class="row">
+                <div class="col-xs-12">
+                    <label class="form-group-sm">
+                        Street
+                        <input type="text" [formControlName]="modelProperties.line1" maxlength="50" class="form-control" />
+                        <input type="text" [formControlName]="modelProperties.line2" maxlength="50" class="form-control" />
+                        <input type="text" [formControlName]="modelProperties.line3" maxlength="50" class="form-control" />
+                        <input type="text" [formControlName]="modelProperties.line4" maxlength="50" class="form-control" />
+                        <input type="text" [formControlName]="modelProperties.line5" maxlength="50" class="form-control" />
+                    </label>
+                    <label class="form-group-sm">
+                        City
+                        <input type="text" [formControlName]="modelProperties.city" maxlength="40" class="form-control" />
+                    </label>
+                </div>
+                <div class="col-sm-6 no-padding-right">
+                    <label class="form-group-sm">
+                        State
+                        <input type="text" [formControlName]="modelProperties.stateCode" maxlength="25" class="form-control" />
+                    </label>
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-group-sm">
+                        Zip Code
+                        <input (blur)="blurLastElement($event);" type="text" [formControlName]="modelProperties.postalCode" maxlength="25" class="form-control" />
+                    </label>
+                </div>
+                <div class="col-sm-6 no-padding-right" *ngIf="canUpdateCountyAndCountry === true">
+                    <label class="form-group-sm">
+                        County
+                        <input type="text" [formControlName]="modelProperties.county" maxlength="50" class="form-control" />
+                    </label>
+                </div>
+                <div class="col-sm-6" *ngIf="canUpdateCountyAndCountry === true">
+                    <label class="form-group-sm">
+                        Country
+                        <input type="text" [formControlName]="modelProperties.countryCode" maxlength="25" class="form-control" />
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="errorMessage" *ngIf="addressInvalid || !isValid" [innerHtml]="validationMessage"></div>
+</div>

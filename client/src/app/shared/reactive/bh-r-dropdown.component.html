@@ -1,0 +1,14 @@
+<label class="form-group" [formGroup]="form">
+	{{bhControl.label}}<span class="required-icon tooltip-tr" *ngIf="isRequired && bhControl.label.length > 0"><span>Required</span></span>
+	<select class="form-control icon-right"
+			[formControlName]="bhControl.key"
+            [id]="bhControl.key"
+            [title]="bhControl.data?.title || ''">
+        <option value="" style="display:none"></option>
+        <!--<option value="" *ngIf="!isRequired"></option>-->
+        <option *ngFor="let option of bhControl.data?.options" [value]="getOptionProperty(option, bhControl.data?.optionsValue || 'Id')">{{getOptionProperty(option, bhControl.data?.optionsText || 'Label')}}</option>
+	</select>
+	<span class="fa fa-caret-down"></span>
+
+	<!--<div class="errorMessage" *ngIf="!isValid" [innerHtml]="validationMessage"> </div>-->
+</label>

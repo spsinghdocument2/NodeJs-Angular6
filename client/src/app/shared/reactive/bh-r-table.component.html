@@ -1,0 +1,158 @@
+<div class="table-searchbar" *ngIf="queryHasRun && showGlobalSearch">
+    <div class="row">
+        <div #ref [ngClass]="ref.children.length == 0 ? '' : 'col-sm-4 col-lg-3 col-xl-2 no-padding-right'">
+            <ng-content select="[pre-searchbar]"></ng-content>
+        </div>
+        <div class="col-sm-6 col-lg-4 input-group">
+            <input type="text" class="form-control" placeholder="Search all columns..." [(ngModel)]="globalSearchText" (keyup.enter)="search();">
+            <div class="input-group-btn">
+                <button type="button" (click)="search()" class="btn btn-blue tooltip-br"><i class="fa fa-fw fa-search"></i><span>Search</span></button>
+            </div>
+        </div>
+        <div class="col-sm-2 col-lg-1">
+            <button type="button" (click)="clearSearch()" class="btn btn-blue btn-sm">Clear</button>
+        </div>
+        <div [ngClass]="ref.children.length == 0 ? 'col-sm-12 col-lg-7' : 'col-sm-12 col-lg-4 col-xl-5'">
+            <ng-content select="[bh-more-info]"></ng-content>
+            <h4 bh-more-info *ngIf="selectedRowsIds.length > 0" class="text-selected"><strong class="blue">{{selectedRowsIds.length}}</strong> row<span *ngIf="selectedRowsIds.length > 1">s</span> selected</h4>
+        </div>
+    </div>
+</div>
+<div [class.table-hscroll]="columns" *ngIf="queryHasRun">
+    <table *ngIf="queryHasRun" class="table-striped">
+        <thead>
+            <tr class="sort-row">
+                <th *ngIf="hasCheckBoxItems || hasSelectAllCheckBoxItem" class="btn-col"></th>
+                <th *ngIf="showViewEditColumn  || showDetail" class="btn-col"></th>
+                <th *ngIf="showDeleteColumn" class="btn-col"></th>
+                <th scope="col" *ngFor="let column of columns | columnExclude" [ngStyle]="{'min-width.px': column?.MinWidth || 0}" [class.sort]="!column.disableSort">
+                    <button class="btn-unstyled" [disabled]="column.disableSort === true" (click)="changeSorting(column.ColumnName, $event)">
+                        {{column.DisplayText}} <span [ngClass]="{'sort-icon':!column.disableSort, 'sort-icon-asc':column.isDescending === false, 'sort-icon-desc':column.isDescending === true }"></span>
+                    </button>
+                </th>
+            </tr>
+            <tr class="filter-row">
+                <th *ngIf="hasCheckBoxItems" class="btn-col"></th>
+                <th *ngIf="hasSelectAllCheckBoxItem" class="btn-col">
+                    <button (click)="selectionAllClicked(rows)" type="button" class="btn btn-icon-sm tooltip-tr" [ngClass]="selectAll ? 'btn-blue' : 'btn-white'">
+                        <i class="fa fa-fw fa-lg" [ngClass]="selectAll ? 'fa-check' : 'fa-uncheck'"></i>
+                        <span *ngIf="selectAll">Deselect All</span>
+                        <span *ngIf="!selectAll">Select Visible</span>
+                    </button>
+                </th>
+                <th *ngIf="showViewEditColumn || showDetail" class="btn-col"></th>
+                <th *ngIf="showDeleteColumn" class="btn-col"></th>
+                <th scope="col" *ngFor="let column of columns | columnExclude" [ngStyle]="{'min-width.px': column?.MinWidth || 0}" [class.filter]="!column.disableFilter">
+                    <div class="form-group-sm input-group" *ngIf="showFilters">
+                        <input type="text" *ngIf="column.disableFilter !== true" class="form-control" [(ngModel)]="column.searchText" (keyup.enter)="search();" placeholder="Filter By..." />
+                        <div class="input-group-btn" *ngIf="column.disableFilter !== true && (column.DataType === 'datetime' || column.DataType === 'date')">
+                            <button class="btn fa fa-info-circle tooltip-tl" type="button" (click)="modalDateTime.show();"><span>Filter Key</span></button>
+                        </div>
+                        <div class="input-group-btn" *ngIf="column.disableFilter !== true && (column.DataType === 'number' || column.DataType === 'decimal' || column.DataType === 'currency')">
+                            <button class="btn fa fa-info-circle tooltip-tl" type="button" (click)="modalNumber.show();"><span>Filter Key</span></button>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody *ngIf="!isLoading">
+            <ng-template ngFor let-row [ngForOf]="rows | filter:globalSearchText | orderBy: {property: column, direction: direction}">
+                <ng-template ngFor let-group [ngForOf]="groups">
+                    <tr *ngIf="displayGroupRow(rowIndex, groupIndex, group.ColumnName)" class="group-header">
+                        <td colspan="100%" [ngStyle]="{'padding-left.px': 10 + (groupIndex * 15)}">
+                            {{groupRowText(group.DisplayText, renderColumnValue(row, group.ColumnName) | format:group.DataType)}}
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <tr [class.selected-row]="row?.isChecked || row?.isSelected" [ngClass]="row.rowClasses">
+                    <td class="btn-col" *ngIf="hasCheckBoxItems || hasSelectAllCheckBoxItem">
+                        <button (click)="checkBoxClicked(row)" type="button" class="btn btn-icon-sm tooltip-tr" [ngClass]="row?.isChecked ? 'btn-blue' : 'btn-white'">
+                            <i class="fa fa-fw fa-lg" [ngClass]="row?.isChecked ? 'fa-check' : 'fa-uncheck'"></i>
+                            <span>Select</span>
+                        </button>
+                    </td>
+                    <td [ngClass]="(showDetail && showViewEditColumn) ? 'btn2-col' : 'btn-col'" *ngIf="showViewEditColumn || showDetail">
+                        <button *ngIf="isMultiSelect && showViewEditColumn" (click)="rowClicked(row)" type="button" class="btn btn-icon-sm tooltip-tr" [ngClass]="!row?.Disabled ? 'btn-white' : 'btn-blue'">
+                            <i class="fa fa-fw fa-lg" [ngClass]="!row?.Disabled ? 'fa-uncheck' : 'fa-check'"></i>
+                            <span>Select</span>
+                        </button>
+                        <button *ngIf="!row?.Disabled && !isMultiSelect && showViewEditColumn" (click)="rowClicked(row)" type="button" class="btn btn-blue btn-icon-sm tooltip-tr">
+                            <i [class]="iconClass"></i>
+                            <span>{{iconTooltip}}</span>
+                        </button>
+                        <button *ngIf="showDetail" class="btn btn-blue btn-icon-sm tooltip-tr" (click)="setShowHideDetail(row.Id)" type="button">
+                            <i class="fa fa-fw fa-eye fa-lg"></i>
+                            <span>Toggle Comment View</span>
+                        </button>
+                    </td>
+                    <td class="btn-col" *ngIf="showDeleteColumn">
+                        <button (click)="onDelete(row)" type="button" class="btn btn-blue btn-icon-sm tooltip-tr">
+                            <i [class]="deleteIconClass"></i>
+                            <span>{{deleteIconTooltip}}</span>
+                        </button>
+                    </td>
+                    <td *ngFor="let column of columns | columnExclude">
+                        <div [ngClass]="'columntype-' + column.DataType.split(':')[0]" [innerHTML]="renderColumnValue(row, column.ColumnName) | format:column.DataType | safeHtml"></div>
+                    </td>
+                </tr>
+                <tr *ngIf="showDetail">
+                    <td #{{row.Id}} [hidden]="hideMsg(row.Id)" colspan="100%" class="whiteblue-bg" [ngClass]="'columntype-' + detailColumn.DataType.split(':')[0]" [innerHTML]="renderColumnValue(row, detailColumn.ColumnName) | format:detailColumn.DataType"></td>
+                </tr>
+            </ng-template>
+        </tbody>
+    </table>    
+</div>
+<bh-loading-indicator *ngIf="isLoading"></bh-loading-indicator>
+<div class="pagination-container" *ngIf="showPagination && totalRows > 0">
+    <div class="pagination-left">
+        <button (click)="prev()" [disabled]="rowStart<2" class="tooltip-tr"><i class="fa fa-lg fa-caret-left"></i><span>Previous</span></button>
+        <button (click)="next()" [disabled]="rowEnd>=totalRows" class="tooltip-tr"><i class="fa fa-lg fa-caret-right"></i><span>Next</span></button>
+        <span class="page-numbers">Page <input *ngIf="forceUpdateOfCurrentPage" [value]="currentPage" (keydown.enter)="setCurrentPage($event.target.value);"> of {{totalPages}}</span>
+    </div>
+    <div class="pagination-right">
+        <span class="row-numbers">Show rows:</span>
+        <div class="row-selector">
+            <select class="form-control icon-right" [ngModel]="pageLength" (ngModelChange)="pageLengthChanged($event)">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="40">40</option>
+                <option value="80">80</option>
+            </select>
+            <span class="fa fa-caret-down"></span>
+        </div>
+        <span class="row-numbers">{{rowStart}}-{{rowEnd}} of {{totalRows}}</span>
+    </div>
+</div>
+<div *ngIf="queryHasRun && totalRows === 0 && !isLoading">
+    No results found
+</div>
+
+
+
+
+<bh-r-modal #modalDateTime size="medium" modalTitle="Date Filter Key">
+    <ul>
+        <li>Dates can be prefixed with <strong>">=", ">", "<",</strong> or <strong>"<="</strong>, to make greater than or equal, greater than, less than, or less than or equal operations occur.</li>
+        <li><strong>" to "</strong> can be used to search a date range (e.g., 1/1/2012 to 12/31/2012).</li>
+        <li>
+            "<strong>last (#) (unit)</strong>" can be used to search for dates within a certain number of units prior to the current date (e.g., last 5 years).
+            <ul>
+                <li>Valid units are <strong>"years", "quarters", "months", "weeks",</strong> or <strong>"days".</strong></li>
+                <li>If you don’t specify a unit, it defaults to <strong>"days"</strong> (e.g., last 90).</li>
+                <li>If you don’t specify a number (#), it defaults to <strong>"1"</strong> (e.g., "last years" equals "last 1 years").</li>
+                <li>Last filters exclude the current unit, so if today was 5/1/2012 and you searched for "last years", records from 1/1/2011 to 12/31/2011 will be displayed.</li>
+            </ul>
+        </li>
+        <li>"<strong>next (#) (unit)</strong>" can be used to search for dates within a certain number of units after the current date (e.g., next 5 years). <strong>Note:</strong> All bullets for last units also apply to next units.</li>
+        <li>"<strong>this (unit)</strong>" can be used to search for dates within the current unit (e.g., this year). Valid units are <strong>"year", "quarter", "month", "week",</strong> or <strong>"day"</strong>.</li>
+        <li>"<strong>yesterday</strong>", "<strong>today</strong>", or "<strong>tomorrow</strong>" will return records with dates associated with those days.</li>
+    </ul>
+</bh-r-modal>
+
+<bh-r-modal #modalNumber size="small" modalTitle="Numeric Filter Key">
+    <ul>
+        <li>Numbers can be prefixed with <strong>">=", ">", "<",</strong> or <strong>"<="</strong>, to make greater than or equal, greater than, less than, or less than or equal operations occur.</li>
+        <li><strong>" to "</strong> can be used to search a number range (e.g., 1000 to 2000).</li>
+    </ul>
+</bh-r-modal>

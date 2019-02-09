@@ -1,0 +1,46 @@
+<div [formGroup]="form">
+    <input #realOne
+           [formControlName]="bhControl.key"
+           [required]="isRequired"
+           hidden="hidden" />
+</div>
+
+<label class="form-group" [class.input-group]="hasButton">
+    {{bhControl.label}}<span class="required-icon tooltip-tr" *ngIf="isRequired"><span>Required</span></span>
+    <span class="form-text-before" *ngIf="bhControl.data?.textBefore">{{bhControl.data.textBefore}}</span>
+
+    <ng-content select="[bh-prefix]"></ng-content>
+
+    <input #inp
+           [id]="bhControl.key"
+           class="form-control parsed-input"
+           type="text"
+           *ngIf="isCurrent"
+           [class.ng-invalid]="control.invalid"
+           [class.ng-valid]="control.valid"
+           [class.ng-touched]="control.touched"
+           [class.ng-dirty]="control.dirty"
+           [class.icon-left]="bhControl.data?.iconLeft"
+           [class.icon-right]="bhControl.data?.iconRight"
+           [class.text-right]="bhControl.data?.alignRight"
+           [class.has-text-before]="bhControl.data?.textBefore"
+           [value]="internalValue"
+           [attr.maxlength]="bhControl.data?.maxLength"
+           [placeholder]="bhControl.data?.placeholder || ''"
+           [title]="bhControl.data?.title || ''"
+           [readonly]="bhControl?.disabled || bhControl?.readonly || bhControl.data?.readonly || form.disabled || false"
+           (blur)="onBlur()"
+           (change)="onChange(inp.value)" />
+
+    <span *ngIf="bhControl.data.iconClass" class="fa {{bhControl.data?.iconClass}}"></span>
+
+    <div class="input-group-addon" *ngIf="hasButton">
+        <ng-content select="[side-button]"></ng-content>
+    </div>
+
+    <ng-content select="[bh-suffix]"></ng-content>
+
+    <div class="errorMessage" *ngIf="control.invalid" [innerHtml]="validationMessage"></div>
+</label>
+
+

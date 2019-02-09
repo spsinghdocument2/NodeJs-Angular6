@@ -1,0 +1,159 @@
+<section class="content">
+      <div class="header-panel header-panel-table sticky">
+        <div class="row">
+            <div class="col-sm-8">
+                <h2>User Security Objects</h2>
+            </div>
+            <div class="col-sm-4">
+                <div class="header-right">
+                    <span class="selected-row-count" *ngIf="selectedRows.length > 0"><h3>{{selectedRows.length}}</h3> selected</span>
+
+                    <div class="dropdown">
+                        <button class="btn btn-white btn-icon dropdown-toggle tooltip-tl" type="button" data-toggle="dropdown" [disabled]="!actionsAllowed"><i class="fa fa-fw fa-key fa-lg"></i><span>Security Level</span></button>
+                        <ul class="dropdown-menu">
+                            <li *ngFor="let action of actions">
+                                <button (click)="action.action()" class="btn" [disabled]="action.isDisabled" >
+                                    {{action.label}}
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-white btn-icon dropdown-toggle tooltip-tl" type="button" data-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-v fa-lg"></i><span>More Actions</span></button>
+                        <ul class="dropdown-menu">
+                            <li><button class="btn" (click)="onRefresh()"><i class="fa fa-fw fa-refresh"></i>Refresh List</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+    <bh-table #table *ngIf="isReady"
+              [rows]="rows"
+              [columns]="columns"
+              [showSelectRow]="showEditButton"
+              [showMultiSelect]="showMultiSelect"
+              (selectedRowsIdsChange)="selectedRowList($event)">
+    </bh-table>
+    <br><br>
+
+       <div class="header-panel sticky header-panel-table spacertop20">
+        <div class="row">
+            <div class="col-sm-8">
+                <h2>Conditions &amp; Actions</h2>
+            </div>
+            <div class="col-sm-4">
+                <div class="header-right">
+                    <div class="dropdown">
+                        <button class="btn btn-white btn-icon dropdown-toggle tooltip-tl" type="button" data-toggle="dropdown"><i class="fa fa-fw fa-plus fa-lg"></i><span>Add New</span></button>
+                        <ul class="dropdown-menu">
+                               <li><button class="btn" (click)="onCreateConditionClick($event)"><i class="fa fa-fw fa-columns"></i>Add Columns</button></li>
+                            <li><button class="btn" (click)="onAddRowClick($event)"><i class="fa fa-fw fa-list-ul"></i>Add Row</button></li>                        
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-white btn-icon dropdown-toggle tooltip-tl" type="button" data-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-v fa-lg"></i><span>More Actions</span></button>
+                        <ul class="dropdown-menu">
+                            <li><button class="btn"><i class="fa fa-fw fa-refresh"></i>Refresh List</button></li>
+                            <li><button class="btn" [disabled]="isDeleteEnable" (click)="onDeleteConditionActionClick(deleteConditionActionModel)"><i class="fa fa-fw fa-trash"></i>Delete Condition/Action</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+        <bh-table [rows]="gridRows"
+              [columns]="gridColumns"
+              allowDragging="Both"
+              allowMerging="All"
+              [allowSorting]="false"
+              [showFiltering]="false"
+              [showAlternatingRows]="false"
+              initalPageLength="999999"
+              icon2Type="pencil"
+              icon2Tooltip="Edit Row"
+              (selectedRow)="selectedRowList($event)">
+    </bh-table>
+     <br><br>
+     <div class="col-xs-12 spacertop10">
+                <bh-options-list [header]="TaskTitle()"
+                                 [colheight]="colHeight()"
+                                 [OptionGroups]="getRecord()"
+                                 (selectedID)="SelectRecord($event)"></bh-options-list>
+            </div>
+            <button (click)="onSave()" class="btn">Save</button>
+            <!--===============================================-->
+<br><br>
+  <bh-r-loading [isLoading]="isLoading">
+
+           <div class="header-panel sticky header-panel-table">
+            <div class="row">
+                <div class="col-sm-4">
+                    <h2>{{title}}</h2>
+                    <h2>saurabh pratap</h2>
+                </div>
+                <div class="col-sm-4 col-xl-3 no-padding-right">
+                    <div [ngSwitch]="queryOptionsLoading">
+                        <bh-dropdown-input *ngSwitchCase="false"
+                                           [options]="queryOptions"
+                                           optionsText="displayText"
+                                           optionsValue="id"
+                                           (change)="onChange()"
+                                           [bh-model]="this"
+                                           bh-property="selectedQueryId">
+                        </bh-dropdown-input>
+                        <span *ngSwitchCase="true" class="form-group form-control">
+                            Loading... <i class="fa fa-spinner fa-pulse fa-fw green"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-4 col-xl-5 no-padding-left">
+                    <button *ngIf="!queryOptionsLoading" [disabled]="isAllowModifyQuery" (click)="onEditQuery()" type="button" class="btn btn-white btn-icon tooltip-tl" style="margin-left: 12px"><i class="fa fa-fw fa-pencil fa-lg"></i><span>Edit/View Query Details</span></button>
+                    <button  type="button" class="btn btn-white btn-icon tooltip-tl" [disabled]="isAllowAddQuery" (click)="onAddQuery()"><i class="fa fa-fw fa-plus fa-lg"></i><span>Add New Query</span></button>
+                    <div class="header-right">
+                        <!--<span class="selected-row-count" *ngIf="selectedRowIds.length > 0"><h3>{{selectedRowIds.length}}</h3> selected</span>-->
+                        <button type="button" class="btn btn-white btn-icon tooltip-tl" *ngIf="showBusinessRule" (click)="onBusinessRule()"><i class="fa fa-fw fa-list fa-lg"></i><i class="fa fa-fw fa-plus-circle overlay-icon"></i><span>Add Business Rule</span></button>
+                        <button type="button" class="btn btn-white btn-icon tooltip-tl" *ngIf="showDecisionRule" (click)="onDecisionRule()"><i class="fa fa-fw fa-table fa-lg"></i><i class="fa fa-fw fa-plus-circle overlay-icon"></i><span>Add Decision Table</span></button>
+                        <button type="button" class="btn btn-white btn-icon tooltip-tl" *ngIf="showCreateTemplate" (click)="onCreateTemplate()"><i class="fa fa-fw fa-plus fa-lg"></i><span>Add New Template</span></button>
+                        <div class="dropdown">
+                            <button class="btn btn-white btn-icon dropdown-toggle tooltip-tl" type="button" id="gridsettings" data-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-v fa-lg"></i><span>More Actions</span></button>
+                            <ul class="dropdown-menu">
+                                <li><button class="btn" (click)="onRefresh()"><i class="fa fa-fw fa-refresh"></i>Refresh List</button></li>
+                                <li><button class="btn" *ngIf="showControlInMoreAction" [disabled]="isDataSourceDisabled" (click)="getDataSource()"><i class="fa fa-fw fa-database"></i>Data Source</button></li>
+                                <li><button class="btn" *ngIf="showControlInMoreAction" [disabled]="isPreviewDisabled" (click)="getPreview()"><i class="fa fa-fw fa-eye"></i>Preview</button></li>
+                                <li><button class="btn" *ngIf="showControlInMoreAction" [disabled]="isSampleDataSourceDisabled" (click)="getSampleDataSource()"><i class="fa fa-fw fa-database"></i>Sample Data Source</button></li>
+                                <!--<li *ngIf="queryActions.length > 0" class="divider"></li>-->
+                                <li *ngFor="let queryAction of queryActions">
+                                    <button (click)="queryAction.action(selectedRowIds)" [disabled]="queryAction.isDisabled" class="btn">
+                                        <i [class]="queryAction.class"></i>{{queryAction.label}}
+                                    </button>
+                                </li>
+                                <li class="divider"></li>
+                                <li><button [disabled]="!selectedQueryId" class="btn" (click)="exportToExcel();"><i class="fa fa-fw fa-file-excel-o"></i>Export to Excel</button></li>
+                                <li><button [disabled]="!selectedQueryId" class="btn" (click)="chooseColumns(columnList);"><i class="fa fa-fw fa-file-pdf-o"></i>Export to PDF</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <bh-section-bh-table-list *ngIf="!queryListLoading"
+                                  [defaultSortColumnName]="columns"
+                                  [service]="pagingService"
+                                  [showSelectRow]="rows"
+                                  iconType="pencil"
+                                  (checkedRow)="onCheckedRow($event)"
+                                  (selectedRow)="selectedQueryRow($event)"
+                                  (clearChecked)="onClearChecked($event)"
+                                  (selectedRowsIdsChange)="onSelectedRowsIdsChange($event)"
+                                  (filteredRowsIdsChange)="onFilteredRowsIdsChange($event)"
+                                  (pagingChange)="onPageNumberChange($event)"
+                                  [showMultiSelect]="isMultiSelect">
+        </bh-section-bh-table-list>
+
+      </bh-r-loading>
+
+    </section>

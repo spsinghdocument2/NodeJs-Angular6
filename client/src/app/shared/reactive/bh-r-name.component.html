@@ -1,0 +1,60 @@
+
+<label [formGroup]="form" class="form-group input-group">
+	<!--<bh-r-input [form]="form" [bhControl]="nameControls.fullNameControl"></bh-r-input>-->
+	{{bhControl.label}}<span class="required-icon tooltip-tr" *ngIf="isRequired"><span>Required</span></span>
+
+	<input #nameInput 
+           type="text"
+		   maxlength="200" 
+		   [formControlName]="modelProperties.fullName"
+		   class="form-control"
+		   [readonly]="bhControl?.disabled || false"
+		   [required]="isRequired"
+           (change)="onFullNameChanged(nameInput.value)" />
+
+	<div class="input-group-addon">
+		<button class="btn btn-blue fa fa-caret-down" type="button" (click)="toggleOpen();" [disabled]="bhControl?.disabled || false"></button>
+		<div class="dropdown-menu" [style.display]="isOpen ? 'block' : 'none'">
+			<div class="row">
+				<div class="col-xs-6 col-md-4">
+					<label class="form-group-sm">
+						Prefix
+						<select class="form-control icon-right" [formControlName]="modelProperties.title" (change)="OnChangePrefix($event.target.value)">
+							<option *ngFor="let option of prefixes" [value]="option">{{option}}</option>
+						</select>
+						<span class="fa fa-caret-down"></span>
+					</label>
+				</div>
+				<div class="col-xs-12 col-md-8">
+					<label class="form-group-sm">
+						First Name
+						<input type="text" [formControlName]="modelProperties.firstName" maxlength="50" class="form-control" (change)="onNamePartsChanged()" />
+					</label>
+				</div>
+				<div class="col-xs-6 col-md-8">
+					<label class="form-group-sm">
+						Middle Name
+						<input type="text" [formControlName]="modelProperties.middleName" maxlength="50" class="form-control" (change)="onNamePartsChanged()"/>
+					</label>
+				</div>
+				<div class="col-xs-12 col-md-8">
+					<label class="form-group-sm">
+						Last Name
+						<input type="text" [formControlName]="modelProperties.lastName" maxlength="50" class="form-control" (change)="onNamePartsChanged()"/>
+					</label>
+				</div>
+				<div class="col-xs-6 col-md-4">
+					<label class="form-group-sm">
+						Suffix
+						<select (blur)="blurLastElement($event);" class="form-control icon-right" [formControlName]="modelProperties.suffix" (change)="OnChangeSufix($event.target.value)">
+							<option *ngFor="let option of suffixes" [value]="option">{{option}}</option>
+						</select>
+						<span class="fa fa-caret-down"></span>
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="errorMessage" *ngIf="!isValid" [innerHtml]="validationMessage"></div>
+</label>

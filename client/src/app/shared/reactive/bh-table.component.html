@@ -1,0 +1,217 @@
+<div [class.flexgrid-pagination]="showPagination && (!fixedHeightOffset || fixedHeightOffset <= 0)"
+     [class.flexgrid-single-select]="showSelectRow && !showMultiSelect"
+     [class.flexgrid-multi-select]="showMultiSelect"
+     [class.flexgrid-two-buttons]="showSelectRow && (showRowAction || showMultiSelect)"
+     [class.flexgrid-treeview]="isTreeView"
+     [class.flexgrid-no-sorting]="!allowSorting">
+    <!--[class.flexgrid-hide-sorting-hover]="allowDragging == 'Both' || allowDragging == 'Rows' || allowSorting == false || isTreeView == true">-->
+    <wj-flex-grid #grid class="grid"
+                  [style.max-height]="fixedHeightOffsetCalc"
+                  [itemsSource]="isTreeViewHierarchicalData ? treeRows : gridData"
+                  [selectionMode]="showMultiSelect == true ? '5' : '0' "
+                  [headersVisibility]="allowDragging == 'Both' || allowDragging == 'Rows' ? 'All' : 'Column' "
+                  autoSizeMode="Both"
+                  [childItemsPath]="isTreeView? childItemsPath:''"
+                  [isReadOnly]="isReadOnly"
+                  [showAlternatingRows]="isTreeView ? false : showAlternatingRows"
+                  [allowDragging]="allowDragging"
+                  [allowMerging]="allowMerging"
+                  [allowSorting]="allowDragging == 'Both' || allowDragging == 'Rows' || isTreeView ? false : allowSorting"
+                  [allowResizing]="allowResizing"
+                  [groupHeaderFormat]="groupHeaderFormat"
+                  [frozenColumns]="frozenColumns"
+                  (updatedView)="updatedView($event)"
+                  (loadedRows)="autoSizeRows($event)"
+                  (initialized)="initialized($event)">
+        <!--Checkbox Column-->
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="showMultiSelect && !isTreeView" cssClass="btn-col" [width]="46" [allowResizing]="false" [allowDragging]="false">
+            <template wjFlexGridCellTemplate [cellType]="'ColumnHeader'">
+                <div class="btn-col" *ngIf="isShowHeaderCheckbox">
+                    <button class="btn btn-white btn-icon-sm tooltip-right" type="button" (click)="openSelections()"><i class="fa fa-fw fa-caret-down fa-lg"></i><span>Selections</span></button>
+                </div>
+            </template>
+            <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
+                <button type="button" class="btn btn-icon-sm tooltip-tr" [ngClass]="cell.row.isSelected ? 'btn-blue' : 'btn-white'" [disabled]="cell.item.disabled ? true: false" (click)="checkBoxClicked(cell.item, cell.row)" *ngIf="showCheckboxBtn">
+                    <i class="fa fa-fw fa-lg" [ngClass]="(cell.row.isSelected || cell.item.disabled)? 'fa-check' : ''"></i>
+                    <span>Select Row</span>
+                </button>
+                <!--<span class="checked-bkg" *ngIf="cell.row.isSelected"></span>-->
+            </template>
+        </wj-flex-grid-column>
+        <!--Icon Column-->
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="showSelectRow && !showRowAction && !isTreeView && !useDynamicIcons" cssClass="btn-col" [width]="46" [allowResizing]="false" [allowDragging]="false">
+            <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
+                <button class="btn btn-blue btn-icon-sm tooltip-tr" type="button" (click)="selectRow(cell.item, cell.row)" *ngIf="showSelectRowBtn">
+                    <i [class]="iconTypeClasses"></i>
+                    <span>{{iconTooltip}}</span>
+                </button>
+            </template>
+        </wj-flex-grid-column>
+        <!-- Change Icon classes for different columns -->
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="showSelectRow && !isTreeView && useDynamicIcons" cssClass="btn-col" [width]="46" [allowResizing]="false" [allowDragging]="false">
+            <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
+                <button class="btn btn-blue btn-icon-sm tooltip-tr" type="button" (click)="selectRow(cell.item, cell.row)" *ngIf="showSelectRowBtn">
+                    <i [ngClass]="getIconName(cell)"></i>
+                    <span>{{iconTooltip}}</span>
+                </button>
+            </template>
+        </wj-flex-grid-column>
+        <!--2 Icon Column-->
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="showSelectRow && showRowAction && !isTreeView" cssClass="btn2-col" [width]="85" [allowResizing]="false" [allowDragging]="false">
+            <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
+                <button class="btn btn-blue btn-icon-sm tooltip-tr" type="button" (click)="selectRow(cell.item, cell.row)" *ngIf="showSelectRowBtn">
+                    <i [class]="iconTypeClasses"></i>
+                    <span>{{iconTooltip}}</span>
+                </button>
+                <button class="btn btn-blue btn-icon-sm tooltip-tr" type="button" (click)="additionalRowAction(cell.item)" *ngIf="showRowActionBtn">
+                    <i [class]="icon2TypeClasses"></i>
+                    <span>{{icon2Tooltip}}</span>
+                </button>
+            </template>
+        </wj-flex-grid-column>
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="showDeleteColumn" cssClass="btn-col" [width]="46" [allowResizing]="false" [allowDragging]="false">
+            <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
+                <button (click)="onDelete(cell.item)" type="button" class="btn btn-blue btn-icon-sm tooltip-tr">
+                    <i [class]="deleteIconClass"></i>
+                    <span>{{deleteIconTooltip}}</span>
+                </button>
+            </template>
+        </wj-flex-grid-column>
+        <!--Data Columns-->
+        <template ngFor let-column [ngForOf]="this.columns" let-columnIndex="index">
+            <wj-flex-grid-column *ngIf="column?.IsVisible != false"
+                                 [header]="column.DisplayText"
+                                 [binding]="column.ColumnName"
+                                 [isContentHtml]="column.ColumnType?.toLowerCase() == 'richtext' || column?.DataType?.toLowerCase() == 'string' || isTreeView"
+                                 [format]="getFormat(column?.DataType?.toLowerCase(), column?.ColumnType?.toLowerCase(), column?.format)"
+                                 [width]="(column.Width)?column.Width:'*'"
+                                 [minWidth]="(column.Width)?column.Width:100"
+                                 [allowMerging]="column.AllowMerging"
+                                 [wordWrap]="wordWrap">
+                <!--Cell Templates-->
+                <template wjFlexGridCellTemplate [cellType]="'GroupHeader'" let-cell="cell" *ngIf="isTreeView && columnIndex == 0">
+                    <div [ngStyle]="{'padding-left': (cell.row.level) * 10 + 'px'}">
+                        <!--<span class="treeview-shadebox"></span>-->
+                        <span class="wj-elem-collapse" [class.wj-glyph-down-right]="cell.row.isCollapsed == false" [class.wj-glyph-right]="cell.row.isCollapsed == true"></span>
+                        <span [innerHTML]="getCellValue(cell.item, column.ColumnName)"></span>
+                    </div>
+                </template>
+                <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell" *ngIf="isTreeView && columnIndex == 0">
+                    <div [ngStyle]="{'padding-left': (cell.row.level) * 10 + 'px'}">
+                        <span [innerHTML]="getCellValue(cell.item, column.ColumnName)"></span>
+                    </div>
+                </template>
+                <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell" *ngIf="column.DataType == 'currency'">
+                    <div class="columntype-currency">{{getCellValue(cell.item, column.ColumnName, column.DataType)}}</div>
+                </template>
+                <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell" *ngIf="column.DataType == 'percentage'">
+                    <div class="columntype-percentage">{{getCellValue(cell.item, column.ColumnName, column.DataType)}}</div>
+                </template>
+                <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell" *ngIf="column.ColumnName == 'progressbaricon'">
+                    <i class="fa fa-fw fa-lg {{getCellValue(cell.item, column.ColumnName, column.DataType)}}"></i>
+                </template>
+                <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell" *ngIf="column.DataType == 'booleanRedX'">
+                    <i class="fa fa-fw fa-lg fa-check green" *ngIf="getCellValue(cell.item, column.ColumnName) == true"></i>
+                    <i class="fa fa-fw fa-lg fa-times red" *ngIf="getCellValue(cell.item, column.ColumnName) == false"></i>
+                </template>
+                <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell" *ngIf="column.DataType == 'hyperlink'">
+                    <div (click)="hyperLinkCellClicked(cell, column.ColumnName)">
+                        View {{column.DisplayText}}
+                    </div>
+                </template>
+                <template wjFlexGridCellTemplate [cellType]="'ColumnHeader'" let-cell="cell">
+                    <div [ngClass]="column.GreenHeader == true ? 'green-background' : 'blue-background'" [class.has-filter]="showFiltering && !isTreeView" [class.word-wrap]="headerWordWrap">
+                        {{column.DisplayText}}
+                        <span class="wj-glyph-up" *ngIf="cell.col.currentSort=='+'"></span>
+                        <span class="wj-glyph-down" *ngIf="cell.col.currentSort=='-'"></span>
+                    </div>
+                </template>
+                <template wjFlexGridCellTemplate [cellType]="'ColumnFooter'" let-cell="cell" *ngIf="column.DataType == 'currency'">
+                    <div class="columntype-currency">{{getCellValue(cell.item, column.ColumnName, column.DataType)}}</div>
+                </template>
+            </wj-flex-grid-column>
+        </template>
+        <!--Blank column if no data-->
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="this.visibleColumns.length == 0" [width]="'*'" [allowResizing]="false" [allowDragging]="false">
+        </wj-flex-grid-column>
+        <!--Checkbox for Treeview-->
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="showMultiSelect && isTreeView" cssClass="btn-col check-col" [width]="46" [allowResizing]="false" [allowDragging]="false">
+            <template wjFlexGridCellTemplate [cellType]="'ColumnHeader'">
+                <div class="btn-col" *ngIf="isShowHeaderCheckbox">
+                    <button class="btn btn-white btn-icon-sm tooltip-right" type="button" (click)="openSelections()"><i class="fa fa-fw fa-caret-down fa-lg"></i><span>Selections</span></button>
+                </div>
+            </template>
+            <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
+                <button type="button" class="btn btn-icon-sm tooltip-tr" [ngClass]="cell.row.isSelected ? 'btn-blue' : 'btn-white'" (click)="checkBoxClicked(cell.item, cell.row)" *ngIf="showCheckboxBtn">
+                    <i class="fa fa-fw fa-lg" [ngClass]="cell.row.isSelected ? 'fa-check' : 'fa-uncheck'"></i>
+                    <span>Select Row</span>
+                </button>
+            </template>
+        </wj-flex-grid-column>
+        <!--Icon Column for Treeview-->
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="showSelectRow && !showRowAction && isTreeView && !useDynamicIcons" cssClass="btn-col" [width]="46" [allowResizing]="false" [allowDragging]="false">
+            <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
+                <button class="btn btn-blue btn-icon-sm tooltip-tr" type="button" (click)="selectRow(cell.item, cell.row)" *ngIf="showSelectRowBtn">
+                    <i [class]="iconTypeClasses"></i>
+                    <span>{{iconTooltip}}</span>
+                </button>
+            </template>
+        </wj-flex-grid-column>
+        <!-- Change Icon Classes Column for Treeview dynamically -->
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="showSelectRow && !showRowAction && isTreeView && useDynamicIcons" cssClass="btn-col" [width]="46" [allowResizing]="false" [allowDragging]="false">
+            <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
+                <button class="btn btn-blue btn-icon-sm tooltip-tr" type="button" (click)="selectRow(cell.item, cell.row)" *ngIf="showSelectRowBtn">
+                    <i [ngClass]="getIconName(cell)"></i>
+                    <span>{{cell.item.IconTooltip}}</span>
+                </button>
+            </template>
+        </wj-flex-grid-column>
+        <!--2 Icon Column-Treeview -->
+        <wj-flex-grid-column [header]="" [isReadOnly]="true" *ngIf="showSelectRow && showRowAction && isTreeView" cssClass="btn2-col" [width]="85" [allowResizing]="false" [allowDragging]="false">
+            <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
+                <button class="btn btn-blue btn-icon-sm tooltip-tr" type="button" (click)="selectRow(cell.item, cell.row)" *ngIf="showSelectRowBtn">
+                    <i [class]="iconTypeClasses"></i>
+                    <span>{{iconTooltip}}</span>
+                </button>
+                <button class="btn btn-blue btn-icon-sm tooltip-tr" type="button" (click)="additionalRowAction(cell.item)" *ngIf="showRowActionBtn">
+                    <i [class]="icon2TypeClasses"></i>
+                    <span>{{icon2Tooltip}}</span>
+                </button>
+            </template>
+        </wj-flex-grid-column>
+        <bh-loading-indicator *ngIf="isLoading"></bh-loading-indicator>
+        <!--Filtering-->
+        <wj-flex-grid-filter *ngIf="showFiltering && !isTreeView" [showSortButtons]="false" (filterApplied)="onFilterApplied($event)"></wj-flex-grid-filter>
+    </wj-flex-grid>
+    <!--Pagination-->
+    <div class="pagination-container" *ngIf="showPagination && gridData.totalItemCount >= 10 && !isTreeView && (!fixedHeightOffset || fixedHeightOffset <= 0)">
+        <div class="pagination-left">
+            <button (click)="gridData.moveToFirstPage();pageChanged(0); " [disabled]="gridData.pageIndex <= 0" class="tooltip-tr"><i class="fa fa-step-backward"></i><span>First</span></button>
+            <button (click)="gridData.moveToPreviousPage();pageChanged(gridData.pageIndex - 1);" [disabled]="gridData.pageIndex <= 0" class="tooltip-tr"><i class="fa fa-lg fa-caret-left"></i><span>Previous</span></button>
+            <button (click)="gridData.moveToNextPage();pageChanged(gridData.pageIndex + 1); " [disabled]="gridData.pageIndex >= gridData.pageCount - 1" class="tooltip-tr"><i class="fa fa-lg fa-caret-right"></i><span>Next</span></button>
+            <button (click)="gridData.moveToLastPage();pageChanged(gridData.pageCount - 1)" [disabled]="gridData.pageIndex >= gridData.pageCount - 1" class="tooltip-tr"><i class="fa fa-step-forward"></i><span>Last</span></button>
+            <span class="page-numbers">Page {{gridData.pageIndex + 1 | number}} of {{gridData.pageCount | number}}</span>
+        </div>
+        <div class="pagination-right">
+            <div class="row-selector">
+                <select class="form-control icon-right" [ngModel]="pageLength" (ngModelChange)="pageLengthChanged($event)">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="40">40</option>
+                    <option value="80">80</option>
+                </select>
+                <span class="fa fa-caret-down"></span>
+            </div>
+            <span class="row-numbers">rows of {{gridData.totalItemCount}}</span>
+        </div>
+    </div>
+    <div *ngIf="!hasData && !isLoading">
+        No results found
+    </div>
+    <!--MultiSelect Mode Dropdown-->
+    <ul class="dropdown-menu" *ngIf="showMultiSelect" [class.opened]="selectionsOpen" (clickOutside)="clickOutsideClose()" (click)="clickOutsideClose()">
+        <!--<li><button class="btn" (click)="checkAll()">Select All</button></li>-->
+        <li><button class="btn" (click)="checkVisible()" [disabled]="isSelectVisible">Select Visible</button></li>
+        <li><button class="btn" (click)="clearCheckedRows()">Select None</button></li>
+    </ul>
+</div>

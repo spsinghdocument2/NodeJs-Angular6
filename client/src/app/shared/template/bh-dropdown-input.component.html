@@ -1,0 +1,12 @@
+<label class="form-group">
+    {{label}}
+    <select class="form-control icon-right" 
+            [disabled]="disabled"
+            [(ngModel)]="bhModel[bhProperty]"
+            (change)="onChange($event.target.value)"
+            >
+       <option *ngFor="let option of options" [value]="option[optionsValue]">{{option[optionsText]}}</option>
+    </select>
+	<span class="fa fa-caret-down"></span>
+</label>
+       

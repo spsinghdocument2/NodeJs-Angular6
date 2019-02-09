@@ -1,0 +1,24 @@
+<section class="content-block">
+        <bh-table #table *ngIf="!isLoading"
+                  [iconType]="iconType"
+                  [iconTooltip]="iconTooltip"
+                  [rows]="rows"
+                  [checkedRowIds]="checkedRowIds"
+                  [columns]="columns"
+                  [showSelectRow]="showSelectRow"
+                  [isSelectVisible]="isSelectVisible"
+                  (selectedRow)="onSelectedRow($event)"
+                  [showDeleteColumn]="showDeleteColumn"
+                  (checkedRow)="onCheckedRow($event)"
+                  (clearChecked)="onClearChecked($event)"
+                  (selectedRowsIdsChange)="onSelectedRowsIdsChange($event)"
+                  (filteredRowsIdsChange)="onFilteredRowsIdsChange($event)"
+                  [showMultiSelect]="showMultiSelect"
+                  (delete)="onDelete($event)"
+                  (pageLengthChange)="onPageLengthChange($event)"
+                  [isSearchAndSelect]="isSearchAndSelect"
+                  (pagingChange)="onPageNumberChange($event)"
+                  [numberOfRowSelection]="numberOfRowSelection">
+        </bh-table>
+        <bh-loading-indicator *ngIf="isLoading"></bh-loading-indicator>
+    </section>

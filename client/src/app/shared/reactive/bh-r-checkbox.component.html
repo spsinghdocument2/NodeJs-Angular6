@@ -1,0 +1,12 @@
+<label [formGroup]="form" class="form-group checkbox-radio checkbox">
+    {{bhControl.label}}
+    <input class="checkbox-input"
+           [class.indeterminate]="isIndeterminate"
+           (click)="removeIndeterminate()"
+           type="checkbox"
+           [disabled]="bhControl?.disabled || false"
+           [attr.name]="bhControl.key"
+           [formControlName]="bhControl.key">
+    <span class="checkbox-radio-indicator"></span>
+    <div class="errorMessage" *ngIf="!isValid" [innerHtml]="validationMessage"></div>
+</label>

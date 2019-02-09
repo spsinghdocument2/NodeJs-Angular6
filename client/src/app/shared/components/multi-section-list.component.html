@@ -1,0 +1,22 @@
+
+<div class="content">
+    <br><br><br>
+<section class="content-block" *ngFor="let list of lists">
+    <bh-section-list
+        [service]="list.service" 
+        [innerControlType]="list.innerControlType"
+        [navigateRoute]="list.navigateRoute"
+        [navigateNewRoute]="list.navigateNewRoute" 
+        [navigateManageTies]="list.navigateManageTies"
+        [sectionName]="list.sectionName"
+        [serviceOptions]="list.serviceOptions"
+        [id]="list.id"
+        [actionListProvider]="list.actionListProvider"
+        [isModalFilterOptionEnabled]="list.isModalFilterOptionEnabled"
+        [iconType]="list.iconType"
+        [iconTooltip]="list.iconTooltip"
+        [deleteMethod]="list.deleteMethod"
+        [getMethod]="list.getMethod"
+        [hasSelectAllCheckBoxItem]="list.hasSelectAllCheckBoxItem"></bh-section-list>
+</section>
+</div>

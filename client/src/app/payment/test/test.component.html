@@ -1,0 +1,200 @@
+<section class="content">
+     <bh-r-entity-header title="{{this.formTitle}}"
+                            [canDelete]="canDelete"
+                            [form]="form"
+                            (save)="onSave($event)"
+                            (close)="onClose()"
+                            (refresh)="getData()"
+                            (saveAndClose)="onSaveAndClose($event)"
+                            (delete)="onDelete($event)"
+                            deleteMessage="Are you sure you want to delete this task chain?">
+                             <li>
+                <button class="btn"  (click)="showChecklist();">
+                    <i class="fa fa-fw fa-check-square-o"></i>Select Checklist(s)
+                </button>
+            </li>
+        </bh-r-entity-header>
+    <form class="login_bg" [formGroup]="form" *ngIf="isReady" novalidate>
+    
+    <div class="row">
+<div class="col-sm-6 col-lg-4 col-xl-3">
+<bh-r-date [form]="form" [bhControl]="controlList.updatedDateControl"></bh-r-date>
+</div>
+<div class="col-sm-6 col-lg-4 col-xl-3">
+<bh-r-date [form]="form" [bhControl]="controlList.establishedDateControl"></bh-r-date>
+</div>
+   <div class="col-sm-6 col-lg-4 col-xl-3">
+    <bh-r-search-and-select [form]="form" [bhControl]="controlList.primaryTeamMemberNameControl"></bh-r-search-and-select>
+    </div>
+     <div class="col-sm-6 col-lg-4 col-xl-3" >
+                  
+    <bh-r-search-and-select  [isMultiSelect]="true" [form]="form" [bhControl]="controlList.serviceProvidersControl"></bh-r-search-and-select>
+     </div>
+ <div class="col-sm-6 col-lg-4 col-xl-3">
+<bh-r-address [form]="form" [bhControl]="controlList.primaryAddressControl">
+<span label-icon class="primary-icon tooltip-tr"><span>Primary</span></span>
+</bh-r-address>
+ </div>
+<div class="col-sm-6 col-lg-4 col-xl-2">
+<bh-r-input [form]="form" [bhControl]="controlList.taxIdControl"></bh-r-input>
+</div>                           
+         <div class="col-sm-6 col-lg-4 col-xl-2">
+         <bh-r-input [form]="form" [bhControl]="controlList.nameControl"></bh-r-input>
+        </div>
+    <div class="col-sm-6 col-lg-4 col-xl-2">
+    <bh-r-parsed-input [form]="form" [bhControl]="controlList.dunBradstreetBusinessMatchThresholdControl"></bh-r-parsed-input>
+     </div>
+     <div class="col-sm-6 col-lg-4 col-xl-2">
+    <bh-r-parsed-input [form]="form" [bhControl]="controlList.dunBradstreetBusinessMatchThreshold2Control"></bh-r-parsed-input>
+     </div>
+<div class="col-sm-6 col-lg-4 col-xl-2">
+     <bh-r-checkbox [form]="form" [bhControl]="controlList.IsTermsConditionsControl"></bh-r-checkbox>
+       </div>
+         <div class="col-sm-6 col-lg-4 col-xl-2">
+         <bh-r-input [form]="form" [bhControl]="controlList.globalSubscriberNumberControl"></bh-r-input>
+        </div>
+        <div class="col-sm-12 col-lg-8 col-xl-6">
+        <bh-r-textarea [form]="form" [bhControl]="controlList.DescriptionControl"></bh-r-textarea>
+      </div>
+      <!--//////////////////////////////////////-->
+ <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <label class="form-group input-group clearfix">
+                        Upload File <span class="required-icon tooltip-tr no-margin"><span>Required</span></span>
+                        <span class="form-control"><span class="upload-text">{{fileToBeUploaded.name}}</span></span>
+                        <span class="input-group-btn">
+                            <label class="btn btn-blue fa fa-upload upload-label">
+                                <input #fileInput type="file" name="my_file" (change)="onFileSelected($event)">
+                            </label>
+                        </span>
+                    </label>
+                </div>
+      <!--///////////////////////////////////////-->
+       <div class="col-sm-12 col-xl-8" >
+     <bh-r-editor [form]="form" [bhControl]="controlList.NoteControl"></bh-r-editor>
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+    <bh-r-parsed-input [form]="form" [bhControl]="controlList.PaymentAmountControl"></bh-r-parsed-input>
+    </div>
+     <div class="col-sm-6 col-lg-4 col-xl-3">
+    <bh-r-dropdown [form]="form" [bhControl]="controlList.opportunityTypeControl"></bh-r-dropdown>
+    </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+    <bh-r-radio [form]="form" [bhControl]="controlList.SelectorOptionTypeControl" (change)="onSelectorTypeChange($event)"></bh-r-radio>
+     </div>
+    <div class="col-sm-6 col-lg-4 col-xl-3">
+    <bh-r-name [form]="form" [bhControl]="controlList.fullnNameControl"></bh-r-name>
+    </div>
+      <div class="col-sm-6 col-lg-4 col-xl-3">
+    <bh-r-input [form]="form" [bhControl]="controlList.PhoneControl">
+    <span label-icon class="primary-icon tooltip-tr"><span>Primary</span></span>
+    </bh-r-input>
+     </div>
+      <div class="col-sm-6 col-lg-4 col-xl-3">
+    <bh-r-input [form]="form" [bhControl]="controlList.EmailControl"></bh-r-input>
+    </div>
+ <div class="col-sm-6 col-lg-4 col-xl-3">
+     <button bh-modal-buttons type="button" class="btn btn-blue" (click)="onShowAddNewProduct()" >ModelShow</button>
+     <button bh-modal-buttons type="button" class="btn btn-blue" (click)="onGrid()" >Grid</button>
+            </div>
+                         <!--Scoring summary-->
+                    <div class="row">
+                        <div class="col-xs-12 form-section-header">
+                            <h3><span>Scoring Summary</span></h3>
+                        </div>
+                    </div>
+    </div>
+    </form>
+     <!--model--> 
+     <bh-r-modal #modal modalTitle="{{Title}}" size="xlarge" [isLoading]="isLoading">
+        <div class="row">
+             <form [formGroup]="form" *ngIf="isReady" novalidate>
+                  <div class="col-sm-12 col-lg-8 col-xl-6">
+                 <bh-r-dropdown [form]="form" [bhControl]="controlList.opportunityTypeControl"></bh-r-dropdown>
+                 </div>
+                </form>
+        </div>
+    <button bh-modal-buttons type="button" class="btn btn-blue pull-left" >Delete</button>
+    <button bh-modal-buttons type="button" class="btn btn-blue" >Save</button>
+</bh-r-modal>
+            <form [formGroup]="form" *ngIf="isReady" novalidate>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <bh-tabs class="bdf-tabs" justified="true" (tabSelected)="onTabSelected($event)"  [showTabs]="updateForm2">
+                                 <bh-tab tabTitle="System Fields">
+                                 </bh-tab>
+                                 <bh-tab tabTitle="Bank Defined Fields" *ngIf="updateForm2">
+                                         <div class="col-sm-6 col-lg-4 col-xl-3">
+    <bh-r-name [form]="form" [bhControl]="controlList.fullnNameControl"></bh-r-name>
+    </div>
+                                 </bh-tab>
+</bh-tabs>
+  </div>
+  </div>
+  <bh-tabs class="">
+      <bh-tab tabTitle="Products">
+		</bh-tab>
+<bh-tab tabTitle="Opportunities"></bh-tab>
+<bh-tab tabTitle="Products & Opportunities"></bh-tab>
+      </bh-tabs>
+                </form> 
+                <!--============================================                             -->
+               <br> <br> <br> <br> <br>
+                <div class="col-sm-12 wrap-grid">
+                   <div class="header-panel header-panel-table sticky">
+                        <div class="row">
+                            <div class="col-sm-8">
+                                <h2>Select Entities</h2>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="header-right">
+                                    <div class="dropdown">
+                                        <button *ngIf="isDealLoad && !isComponentShownInModel" class="btn btn-white btn-icon tooltip-tl" type="button"  disabled id="doc-btn"><i class="fa fa-fw fa-file-o fa-lg"></i><i class="fa fa-fw fa-share overlay-icon"></i><span>Create Document</span></button>
+                                        <button *ngIf="!isDealLoad && !isComponentShownInModel" class="btn btn-white btn-icon tooltip-tl" type="button"  disabled id="download-btn"><i class="fa fa-fw fa-file-text-o fa-lg"></i><i class="fa fa-fw fa-share overlay-icon"></i><span>Download Data</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <bh-table #whereClauseGrid 
+                              [rows]="entityIdentificationDataModel"
+                              [columns]="whereClauseGridColumns"
+                              [childItemsPath]="'Contacts'"
+                              [isTreeView]="isTreeView"
+                              [isTreeViewHierarchicalData]="isTreeViewHierarchicalData"
+                              showMultiSelect="true"
+                              iconTooltip="Edit Address"
+                              (selectedRow)="onEditRow($event)"
+                              (selectedRowsIdsChange)="onSelectedRowIdsChange($event)"
+                              [showCheckboxBtn]="showCheckboxBtn"
+                              [showSelectRowBtn]="showSelectRowBtn"
+                             iconType="eye"
+                              iconTooltip="View/Edit Table"
+                            savedPagingAndFilteringKey="LookupTableList">
+                    </bh-table>
+
+                    <!--//======================================-->
+
+                     <bh-section-list #results [service]="data.service"
+                         [navigateRoute]="data.navigateRoute"
+                         [navigateNewRoute]="data.navigateNewRoute"
+                         [sectionName]="data.sectionName"
+                         hasSelectAllCheckBoxItem="true"
+                         [actions]="data.actions"
+                         (selectedRowsIdsChange)="onSelectedRowIdsChange($event)"
+                         (onRefreshRemoveCheckedRows)="RefreshList($event)">
+        </bh-section-list>
+
+        <!--=========================-->
+<br> <br> <br>
+        <bh-section-list [service]="data2.service"
+                     [navigateRoute]="data2.navigateRoute"
+                     [navigateNewRoute]="data2.navigateNewRoute"
+                     [sectionName]="data2.sectionName"
+                     [actions]="data2.actions"
+                     [innerControlType]="data2.innerControlType"
+                     (selectedRowsIdsChange)="onSelectedRowIdsChange($event)"
+                     (onRefreshRemoveCheckedRows)="RefreshList($event)">
+    </bh-section-list>
+                </div>
+             
+</section>

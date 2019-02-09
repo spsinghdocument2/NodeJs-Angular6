@@ -1,0 +1,78 @@
+<div [formGroup]="form">
+    <input #realOne
+           [formControlName]="bhControl.key"
+           [required]="isRequired"
+           hidden="hidden" />
+</div>
+
+<div class="form-group datepicker-label" [class.focus]="hasFocus" [class.disable-dropdown]="bhControl?.disabled || bhControl?.readonly || bhControl?.picker == false || false">
+    {{bhControl.label}}<span class="required-icon tooltip-tr" *ngIf="isRequired && !dateOptions"><span>Required</span></span>
+
+    <!--Date Only-->
+    <input #inp1
+           *ngIf="bhControl.data.type !== 'datetime' && bhControl.data.type !== 'time'"
+           class="form-control parsed-input icon-right"
+           [class.ng-invalid]="control.invalid" 
+           [class.ng-valid]="control.valid"
+           ng2-datetime-picker
+           [(ngModel)]="internalValue"
+           (change)="onChange(inp1.value)"
+           (valueChanged)="onChange(inp1.value)"
+           [required]="isRequired"
+           [readonly]="bhControl?.disabled || bhControl?.readonly || form.disabled || false"
+           date-format="MM/DD/YYYY"
+           placeholder="MM/DD/YYYY"
+           close-on-select="true"
+           date-only="true"
+           (focus)="onFocus()"
+           (blur)="onBlur()" />
+
+    <!--Date and Time-->
+    <input #inp1
+           *ngIf="bhControl.data.type == 'datetime'"
+           class="form-control parsed-input icon-right"
+           [class.ng-invalid]="control.invalid" 
+           [class.ng-valid]="control.valid" 
+           ng2-datetime-picker
+           [(ngModel)]="internalValue"
+           (change)="onChange(inp1.value)"
+           (valueChanged)="onChange(inp1.value)"
+           [required]="isRequired"
+           [readonly]="bhControl?.disabled || bhControl?.readonly || form.disabled || false"
+           date-format="MM/DD/YYYY h:mm A"
+           placeholder="MM/DD/YYYY hh:mm"
+           close-on-select="false"
+           minute-step="5"
+           (focus)="onFocus()"
+           (blur)="onBlur()" />
+
+    <!--Time Only-->
+    <input #inp1
+           *ngIf="bhControl.data.type == 'time'"
+           class="form-control parsed-input icon-right"
+           [class.ng-invalid]="control.invalid" 
+           [class.ng-valid]="control.valid"
+           ng2-datetime-picker
+           [(ngModel)]="internalValue"
+           (change)="onChange(inp1.value)"
+           (valueChanged)="onChange(inp1.value)"
+           [required]="isRequired"
+           [readonly]="bhControl?.disabled || bhControl?.readonly || form.disabled || false"
+           date-format="h:mm A"
+           placeholder="hh:mm AM/PM"
+           close-on-select="false"
+           minute-step="5"
+           time-only="true"
+           (focus)="onFocus()"
+           (blur)="onBlur()" />
+
+    <span *ngIf="bhControl.data.type !== 'time'" class="fa fa-calendar"></span>
+    <span *ngIf="bhControl.data.type === 'time'" class="fa fa-clock-o"></span>
+    <div class="errorMessage" *ngIf="!isValid" [innerHtml]="validationMessage"></div>
+
+</div>
+
+<!--
+https://github.com/ng2-ui/ng2-datetime-picker
+
+-->

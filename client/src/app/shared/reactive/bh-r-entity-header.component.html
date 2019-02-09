@@ -1,0 +1,28 @@
+<div class="header-panel entity-header sticky" [formGroup]="form">
+    <div class="header-left truncate-ellipsis">
+        <h1>{{title}}</h1>
+    </div>
+    <div class="header-right">
+        <button *ngIf="!readOnly && !saveHidden" type="button" id="notify-save" class="btn btn-white btn-icon tooltip-tl hidden-xs hidden-hs hidden-sm" [disabled]="!canSave" (click)="onSave()"><i class="fa fa-fw fa-floppy-o fa-lg"></i><span>Save</span></button>
+        <button *ngIf="!readOnly && !saveNewHidden" type="button" class="btn btn-white btn-icon tooltip-tl" [disabled]="!canSave" (click)="onSaveAndNew()"><i class="fa fa-fw fa-floppy-o fa-lg"></i><i class="fa fa-fw fa-plus overlay-icon"></i><span>Save and Create Another</span></button>
+        <button *ngIf="!readOnly && !saveCloseHidden" type="button" class="btn btn-white btn-icon tooltip-tl" [disabled]="!canSave" (click)="onSaveAndClose()"><i class="fa fa-fw fa-floppy-o fa-lg"></i><i class="fa fa-fw fa-times overlay-icon"></i><span>Save and Close</span></button>
+        <button *ngIf="!closeHidden" type="button" id="notify-cancel" class="btn btn-white btn-icon tooltip-tl" (click)="onClose()"><i class="fa fa-fw fa-times fa-lg"></i><span>Close</span></button>
+        <div class="dropdown">
+            <button *ngIf="!moreOptionsHidden" class="btn btn-white btn-icon dropdown-toggle tooltip-tl" type="button" id="more" data-toggle="dropdown"><i class="fa fa-fw fa-ellipsis-v fa-lg"></i><span>More Actions</span></button>
+            <ul class="dropdown-menu">
+                <li *ngIf="!readOnly" class="hidden-md hidden-lg hidden-xl"><button class="btn" [disabled]="!canSave" (click)="onSave()"><i class="fa fa-fw fa-floppy-o"></i>Save</button></li>
+                <li *ngIf="canRefresh"><button class="btn" (click)="onRefresh()"><i class="fa fa-fw fa-refresh"></i>{{refreshText}}</button></li>
+                <li *ngIf="additionalActions.length" role="separator" class="divider"></li>
+                <ng-content></ng-content>
+                <li *ngFor="let action of additionalActions">
+                    <button class="btn" (click)="action.actionFunction(action.dataObject)">
+                        <i [class]="action.displayClass"></i>{{action.displayText}}
+                    </button>
+                </li>
+                <li *ngIf="canDelete" role="separator" class="divider"></li>
+                <li *ngIf="canDelete"><button class="btn" (click)="onDelete()"><i class="fa fa-fw fa-trash"></i>Delete</button></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="header-breadcrumb" *ngIf="lastNav">for {{lastNav}}</div>

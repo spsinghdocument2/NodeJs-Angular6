@@ -1,0 +1,54 @@
+<div class="row">
+    <div class="col-sm-6">
+        <div class="multiselect-col-header">
+            <div class="form-section-header">
+                <h3><span>{{availableHeader()}}</span></h3>
+                <button class="btn btn-white2 btn-sm" [disabled]="AllSelected()"
+                        (click)="selectAll()">
+                    <i class="fa fa-lg fa-check"></i> &nbsp;Select All
+                </button>
+            </div>
+        </div>
+        <div class="multiselect-col1" [style.height]="colheight">
+            <div *ngFor="let optionGroup of OptionGroups">
+                <div class="group-title" *ngIf="useOptionGroupName()">{{optionGroup.Name()}}</div>
+                <div class="option-container" *ngFor="let option of optionGroup.getAvailableOptions()" [class.div-greyed]="option.IsSelected()">
+                    <label class="checkbox-radio checkbox">
+                        <input type="checkbox"
+                                [checked]="option.IsSelected()"
+                                [id]="option.ID()"
+                                class="check"
+                                (change)="optionSelected($event.target)" />{{option.Name()}}
+                        <span class="checkbox-radio-indicator"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 no-padding-left">
+        <div class="multiselect-col-header">
+            <div class="form-section-header">
+                <h3><span>{{selectedHeader()}}</span></h3>
+                <button class="btn btn-white2 btn-sm" [disabled]="NoneSelected()"
+                        (click)="unSelectAll()">
+                    <i class="fa fa-lg fa-times"></i> &nbsp;Deselect All
+                </button>
+            </div>
+        </div>
+        <div class="multiselect-col2" [style.height]="colheight">
+            <div *ngFor="let optionGroup of OptionGroups">
+                <div class="group-title" *ngIf="useOptionGroupName() && optionGroup.getSelectedOptions().length > 0">{{optionGroup.Name()}}</div>
+                <div class="option-container" *ngFor="let option of optionGroup.getSelectedOptions()">
+                    <label class="checkbox-radio checkbox">
+                        <input type="checkbox"
+                                [checked]="option.IsSelected()"
+                                [id]="option.ID()"
+                                class="check"
+                                (change)="optionSelected($event.target)" />{{option.Name()}}
+                        <span class="checkbox-radio-indicator"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

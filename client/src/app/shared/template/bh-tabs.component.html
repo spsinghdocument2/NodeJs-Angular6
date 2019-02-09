@@ -1,0 +1,6 @@
+<ul class="nav nav-tabs" [class.nav-justified]="justified" [class.hidden-tabs]="!showTabs">
+	<li *ngFor="let tab of tabs" (click)="selectTab(tab)" [class.active]="tab.active">
+		<a [class]="tab.tabColor" [class.tab-error]="tab.tabError" [class.tab-primary]="tab.tabPrimary" href="javascript:void(0)" [innerHTML]="tab.title">{{tab.title}}</a>
+	</li>
+</ul>
+<ng-content></ng-content>

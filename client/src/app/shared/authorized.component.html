@@ -1,0 +1,51 @@
+<nav class="navbar navbar-default no-margin navbar-fixed-top"> 
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header fixed-brand pull-left"> <a href="#" class="navbar-brand"><span><img alt="" src="assets/images/logo.png" class="logo_mobile"></span></a> </div>
+  <!-- navbar-header-->
+  
+  <div id="bs-example-navbar-collapse-1" class="collapse navbar-collapse show-collapse"> 
+    
+    <!-- User profile rt side start-->
+    <ul class="nav navbar-top-links navbar-right user_panel pull-right heder_nav">
+      <li class="dropdown"> <a aria-expanded="true" href="Javascript:void(0)" data-toggle="dropdown" class="dropdown-toggle grey padd_tpbt18"> <img class="user_img" src="assets/images/imgres.jpg">&nbsp; &nbsp;<span class="mobile_hide">Tony Symons</span> &nbsp; <i class="fa fa-angle-down" aria-hidden="true"></i></a> 
+        <!-- dropdown-user start -->
+        <ul class="dropdown-menu">
+          <li><a href="Javascript:void(0)"><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp; &nbsp; Back to MAF HOME</a> </li>
+          <li class="divider"></li>
+          <li><a href="reset_password.html"><i class="fa fa-unlock-alt" aria-hidden="true"></i>&nbsp; &nbsp; Reset Password</a> </li>
+          <li class="divider"></li>
+          <li><a (click)="logout()" href="Javascript:void(0)"><i class="fa fa-power-off fa-fw"></i>&nbsp; &nbsp; Sign Out</a> </li>
+        </ul>
+        <!-- /.dropdown-user end --> 
+      </li>
+    </ul>
+    <!-- User profile rt side end--> 
+  </div>
+  <!-- bs-example-navbar-collapse-1 --> 
+</nav>
+<!-- .left-sidebar -->
+  <div class="left-sidebar ">
+    <div class="sidebar-holder">
+      <ul class="nav  nav-list">
+        <!-- sidebar to mini Sidebar toggle -->
+        <li class="nav-toggle"> <span class="menu_text">Menu</span>
+          <button class="btn  btn-nav-toggle text-primary"> <img src="assets/images/menu_image.png"/> 
+          <!--<i class="fa fa-bars" aria-hidden="true"></i>--></button>
+        </li>
+        <li class="active"><a (click)="home()" href="javascript:void(0)" data-original-title="Accounts"><img src="assets/images/acounts.png"/><span class="hidden-minibar"> Accounts </span> </a> </li>
+        <li><a (click)="paymentAgreement()"  href="avascript:void(0)" data-original-title="MAF Payment"><img src="assets/images/maf_payment.png"/><span class="hidden-minibar"> MAF Payment </span> </a> </li>
+        <li><a href="javascript:void(0)" data-original-title="Pay My Bill"><img src="assets/images/account_list_icon.png"/><span class="hidden-minibar"> Pay My Bill </span> </a> </li>
+        <li><a href="avascript:void(0)" data-original-title="Payment History"><img src="assets/images/history_reprt_icon.png"/><span class="hidden-minibar"> Payment History </span> </a>
+        <li> <a  href="avascript:void(0)" data-original-title="User Profile"> <img src="assets/images/user.png"/><span class="hidden-minibar"> User Profile </span> </a> </li>
+     <li> <a (click)="test()" href="avascript:void(0)" data-original-title="User Profile"> <img src="assets/images/user.png"/><span class="hidden-minibar"> Test </span> </a> </li>
+      <li> <a [routerLink]="['../crm', {outlets: {primary: ['home'], section: ['producthistoryfieldaudithistory2']}}]" alt="CRM" href="avascript:void(0)" data-original-title="User Profile"> <img src="assets/images/user.png"/><span class="hidden-minibar"> Test2 </span> </a> </li>
+      
+      <li> <a (click)="test3()"  href="avascript:void(0)" data-original-title="User Profile"> <img src="assets/images/user.png"/><span class="hidden-minibar"> Test3 </span> </a> </li>
+      <li> <a (click)="test4()"  href="avascript:void(0)" data-original-title="User Profile"> <img src="assets/images/user.png"/><span class="hidden-minibar"> Test4 </span> </a> </li>
+      </ul>
+    </div>
+  </div>
+  <router-outlet></router-outlet>
+   <router-outlet name="section"></router-outlet>
+
+  

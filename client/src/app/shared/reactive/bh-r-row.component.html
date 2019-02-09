@@ -1,0 +1,53 @@
+<template [ngIf]="childRows.children && childRows.showChildren">
+    <template ngFor let-rowChild [ngForOf]="childRows.children" let-rowIndex="index">
+            <tr [class.selected-row]="row?.isChecked || row?.isSelected">
+                <td class="btn-col" *ngIf="hasCheckBoxItems" width="50">
+                    <button (click)="checkBoxClicked(rowChild)" type="button" class="btn btn-icon-sm tooltip-tr" [ngClass]="rowChild?.isChecked ? 'btn-blue' : 'btn-white'">
+                        <i class="fa fa-fw fa-lg" [ngClass]="rowChild?.isChecked ? 'fa-check' : 'fa-uncheck'"></i>
+                        <span>Select</span>
+                    </button>
+                </td>
+                <td class="btn-col" *ngIf="showViewEditColumn" width="50">
+                    <button *ngIf="isMultiSelect" (click)="rowClicked(rowChild)" type="button" class="btn btn-icon-sm tooltip-tr" [ngClass]="!rowChild?.Disabled ? 'btn-white' : 'btn-blue'">
+                        <i class="fa fa-fw fa-lg" [ngClass]="!rowChild?.Disabled ? 'fa-uncheck' : 'fa-check'"></i>
+                        <span>Select</span>
+                    </button>
+                    <button *ngIf="!row?.Disabled && !isMultiSelect" (click)="rowClicked(rowChild)" type="button" class="btn btn-blue btn-icon-sm tooltip-tr">
+                        <i [class]="iconClass"></i>
+                        <span>{{iconTooltip}}</span>
+                    </button>
+                </td>
+                <td *ngFor="let column of columns | columnExclude; let i = index" width="300" [class]="childHiearchyLevelClass(rowChild,i)">
+                    <div class="tree-cell" *ngIf="i==0">
+                        <button *ngIf="rowChild.children" [ngClass]="rowChild?.showChildren ?'btn btn-unstyled tree-btn open' :'btn btn-unstyled tree-btn'" type="button" (click)="toggleDetails(rowChild)">
+                            <i [ngClass]="rowChild?.showChildren ?'fa fa-fw fa-angle-down fa-lg' :'fa fa-fw fa-angle-right fa-lg'"></i>
+                        </button>
+                        <span class="tree-line"></span>
+                        {{renderColumnValue(rowChild, column.ColumnName) | format:column.DataType}}
+                    </div>
+                    <div *ngIf="i!=0" [ngClass]="'columntype-' + column.DataType.split(':')[0]" [innerHTML]="renderColumnValue(rowChild, column.ColumnName) | format:column.DataType"></div>
+                </td>
+            </tr>
+        <template [ngIf]="rowChild.children && rowChild.showChildren">
+            <tr>
+                <td [attr.colspan]="childColspan" style="padding:0;">
+                    <table bh-r-row 
+                           [childRows]="rowChild" 
+                           [columns]="columns" 
+                           [selectedRowsIds]="selectedRowsIds" 
+                           [showViewEditColumn]="showViewEditColumn" 
+                           [hasCheckBoxItems]="hasCheckBoxItems" 
+                           [singleSelection]="isAllowSingleSelection" 
+                           [rows]="rows" 
+                           [hierarchyColumns]="treeHierarchyColumns" 
+                           [isMultiSelect]="isMultiSelect" 
+                           [iconClass]="iconClass" 
+                           [iconTooltip]="iconTooltip" 
+                           (selectedRowsIdsChange)="onSelectedRowsIdsChange($event)" 
+                           (selectedRow)="selectedRowChange($event);">
+                    </table>
+                </td>
+            </tr>
+        </template>
+    </template>
+</template>
